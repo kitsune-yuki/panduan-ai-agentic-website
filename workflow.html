@@ -321,6 +321,7 @@ footer::before{content:"\25C6  \25C6  \25C6";display:block;text-align:center;col
           <li><a href="#fase-5" data-toc>Fase 5 · Testing &amp; Debugging</a></li>
           <li><a href="#fase-6" data-toc>Fase 6 · Deploy</a></li>
           <li><a href="#fase-7" data-toc>Fase 7 · Maintenance</a></li>
+          <li><a href="#troubleshooting" data-toc>Troubleshooting</a></li>
         </ol>
       </li>
       <li><a href="#prompt-bank" data-toc>3 · Bank Prompt Serbaguna</a></li>
@@ -340,6 +341,7 @@ footer::before{content:"\25C6  \25C6  \25C6";display:block;text-align:center;col
     <span class="eyebrow"><i></i> Panduan pemula · Tanpa harus jago coding dulu</span>
     <h1>Bikin website dari nol sampai <em>online</em>, dibantu AI agentic</h1>
     <p class="lede">AI agentic itu AI yang tidak cuma menjawab chat — dia bisa merencanakan, menulis kode, menjalankan perintah, membaca error, dan memperbaikinya sendiri. Tugasmu bukan mengetik kode baris demi baris, tapi memberi arahan yang jelas, memeriksa hasilnya, dan memutuskan. Ini peta jalannya, fase demi fase.</p>
+    <p class="lede" style="margin-top:10px"><b>Jujur dulu:</b> kamu tidak perlu <i>menulis</i> semua kode sendiri — tapi kamu <i>harus</i> membaca dan memahami perintah-perintah yang dijalankan agent, dan memeriksa hasilnya di browser. Kalau ada istilah yang belum paham, klik ke <a href="dokumentasi.html#glosarium">Glosarium</a> — di sanalah semua istilah dijelaskan satu kalimat.</p>
 
     <div class="hero-grid">
       <div class="card">
@@ -374,6 +376,7 @@ footer::before{content:"\25C6  \25C6  \25C6";display:block;text-align:center;col
       <div class="loop-step"><div class="num">LANGKAH 04</div><h3>Iterate — Memperbaiki</h3><p>Kalau ada yang kurang, agent memperbaiki berdasarkan temuan — lalu loop berputar lagi sampai hasilnya benar-benar sesuai maumu.</p></div>
     </div>
     <p class="loop-arrow">↻ Loop ini berputar untuk setiap fitur: satu fitur selesai &amp; terverifikasi, baru lanjut ke fitur berikutnya.</p>
+    <div class="tip"><b>“Hermes” — yang dimaksud di panduan ini adalah Hermes Agent.</b> Ada tiga hal berbeda bernama Hermes dari Nous Research, jangan tertukar: (1) <b>Hermes Agent</b> — harness AI agentic (aplikasi agent-nya); inilah yang dipakai panduan ini. (2) Model Hermes 3/4 — “otak” open-weight yang bisa dipakai di dalam agent. (3) Hermes MCP Toolset — kumpulan server MCP untuk analisis kode, untuk lanjutan saja. Di Hermes Agent: <span class="mono">MEMORY.md</span> menyimpan fakta, <span class="mono">SKILL.md</span> menyimpan prosedur, dan <span class="mono">AGENTS.md</span> adalah otak proyek. Pasang skill Superpowers dengan <span class="mono">hermes plugins install obra/superpowers --enable</span>. Referensi: <a href="https://github.com/NousResearch/hermes-agent">github.com/NousResearch/hermes-agent</a> dan <a href="https://hermes-agent.nousresearch.com/docs/guides/tips">panduan tips resminya</a>.</div>
   </section>
 
   <!-- PHASES -->
@@ -383,17 +386,23 @@ footer::before{content:"\25C6  \25C6  \25C6";display:block;text-align:center;col
 
     <!-- FASE 0 -->
     <article class="phase open" id="fase-0">
-      <button class="phase-head" aria-expanded="true"><span class="phase-badge">0</span><span class="phase-head-main"><h3>Persiapan — Siapkan alat &amp; akun</h3><p>Sekali setup, dipakai untuk semua proyek berikutnya.</p><span class="meta"><span class="chip">⏱ 30–60 menit</span><span class="chip out">Output: laptop siap kerja</span></span></span><span class="chev">⌄</span></button>
+      <button class="phase-head" aria-expanded="true"><span class="phase-badge">0</span><span class="phase-head-main"><h3>Persiapan — Siapkan alat &amp; akun</h3><p>Sekali setup, dipakai untuk semua proyek berikutnya.</p><span class="meta"><span class="chip">⏱ 2–4 jam kalau pertama kali — itu wajar</span><span class="chip out">Output: laptop siap kerja</span></span></span><span class="chev">⌄</span></button>
       <div class="phase-body">
         <h4>Daftar tugas</h4>
         <ul class="tasks">
-          <li><div><b>Install editor + AI agent.</b> <span>Pilih satu dulu: Cursor, Windsurf, atau ekstensi AI di VS Code — atau agent berbasis terminal seperti Claude Code / Codex kalau sudah nyaman dengan terminal.</span></div></li>
-          <li><div><b>Install pondasi:</b> <span>Node.js (versi LTS), Git, dan browser Chrome. Minta agent membantumu memeriksa semuanya sudah terpasang.</span></div></li>
+          <li><div><b>Install editor + AI agent — pakai jalur default panduan ini:</b> <span>VS Code + <b>Hermes Agent</b>. Unduh VS Code di <a href="https://code.visualstudio.com/">code.visualstudio.com</a>, Node.js di <a href="https://nodejs.org/">nodejs.org</a> (pilih tombol “LTS”, bukan “Current”), Git di <a href="https://git-scm.com/">git-scm.com</a>, lalu instal Hermes Agent mengikuti <a href="https://github.com/NousResearch/hermes-agent">github.com/NousResearch/hermes-agent</a>. Alternatif lain (Cursor, Windsurf, Claude Code) boleh dipakai nanti — untuk proyek pertama, pakai jalur default ini supaya semua contoh di panduan cocok.</span></div></li>
+          <li><div><b>Buka terminal dan periksa instalasi:</b> <span><b>Windows:</b> tekan <span class="mono">Win + X</span> → “Terminal”, atau di VS Code tekan <span class="mono">Ctrl + `</span>. <b>Linux:</b> tekan <span class="mono">Ctrl + Alt + T</span>, atau buka “Terminal” dari menu aplikasi. Ketik tiga perintah di kotak bawah ini, satu per satu, lalu bandingkan hasilnya dengan kolom “Hasil yang benar”.</span></div></li>
           <li><div><b>Buat akun GitHub.</b> <span>Untuk menyimpan kode (version control) — ini juga “tombol undo raksasa” dan tempat backup proyekmu.</span></div></li>
           <li><div><b>Buat akun platform deploy.</b> <span>Vercel, Netlify, atau Cloudflare Pages — ketiganya punya paket gratis untuk mulai. Hubungkan dengan akun GitHub.</span></div></li>
           <li><div><b>Buat folder khusus proyek</b> <span>di laptop, satu folder per proyek. Jangan campur dengan file kerja lain.</span></div></li>
           <li><div><b>Latihan 10 menit:</b> <span>minta agent membuat halaman HTML sederhana “Halo, nama saya …” lalu buka di browser. Tujuannya merasakan loop Plan → Act → Observe pertamamu.</span></div></li>
         </ul>
+        <div class="tip"><b>Untuk pemula — memeriksa instalasi (ketik di terminal):</b><br>
+        <span class="mono">$ node -v</span> → hasil yang benar: <span class="mono">v20.x.x</span> atau <span class="mono">v22.x.x</span> (angka pastinya boleh beda, yang penting muncul nomor versi)<br>
+        <span class="mono">$ npm -v</span> → hasil yang benar: <span class="mono">10.x.x</span><br>
+        <span class="mono">$ git --version</span> → hasil yang benar: <span class="mono">git version 2.x</span><br>
+        Perintahnya sama di Windows (PowerShell) dan Linux (bash). Kalau muncul “command not found” / “tidak dikenali”: tutup terminal sepenuhnya, buka lagi, lalu coba sekali lagi — itu normal, bukan kamu yang salah. Kalau masih gagal, buka <a href="#troubleshooting">Troubleshooting</a>. Istilah yang belum paham? Lihat <a href="dokumentasi.html#glosarium">Glosarium</a>.</div>
+        <div class="tip"><b>Kemenangan 15 menit — “Halo, dunia!”:</b> Kalau tiga pemeriksaan di atas sudah benar, kamu sudah menang hari ini. Lanjutkan ke tugas terakhir di atas: minta agent membuat halaman “Halo, nama saya …”, buka di browser, dan rayakan — itu loop Plan → Act → Observe pertamamu, dan bukti laptopmu sudah siap kerja.</div>
         <div class="tip"><b>Tips:</b> Catat semua akun &amp; password di password manager, bukan di sticky notes. Kamu akan sering berpindah antar layanan ini.</div>
         <h4>Contoh prompt</h4>
         <div class="promptbox"><pre data-copy>Saya pemula. Tolong pandu saya memeriksa apakah Node.js, Git, dan npm sudah terpasang di komputer ini. Jalankan perintah pemeriksaannya satu per satu, jelaskan arti hasilnya dengan bahasa sederhana, dan beri tahu langkah instalasi jika ada yang belum terpasang. Jangan mengubah apa pun tanpa izin saya.</pre><button class="copy-btn">Salin prompt</button></div>
@@ -413,6 +422,7 @@ footer::before{content:"\25C6  \25C6  \25C6";display:block;text-align:center;col
           <li><div><b>Tentukan kriteria “selesai”.</b> <span>Misalnya: “Pengunjung bisa melihat katalog, klik tombol WhatsApp, dan halaman tampil rapi di HP.” Tanpa ini, kamu tidak tahu kapan harus berhenti mengutak-atik.</span></div></li>
         </ul>
         <div class="tip"><b>Tips:</b> Simpan <span class="mono">BRIEF.md</span> di folder proyek. Setiap sesi baru dengan agent, minta dia membaca file ini dulu — agent tidak punya ingatan antar-sesi, file inilah ingatannya.</div>
+        <div class="tip"><b>BRIEF.md vs PRD — ini dokumen yang sama, beda tahap.</b> <span class="mono">BRIEF.md</span> adalah brief 1 halaman yang kamu tulis dulu di fase ini. Setelah brief disetujui, ia <i>tumbuh</i> menjadi PRD lengkap dan disimpan sebagai <span class="mono">docs/PRD.md</span> di repo (lihat Dokumentasi Bab 1). Jangan membuat dua dokumen berbeda yang isinya bertentangan — satu dokumen, dari singkat ke lengkap.</div>
         <h4>Contoh prompt</h4>
         <div class="promptbox"><pre data-copy>Saya ingin membuat website katalog untuk usaha [jelaskan usahamu]. Sebelum menulis kode apa pun, wawancara saya dulu: ajukan maksimal 8 pertanyaan untuk memperjelas target pengunjung, halaman yang dibutuhkan, fitur wajib, dan gaya tampilan. Setelah saya jawab, tuliskan hasilnya menjadi file BRIEF.md yang rapi berisi: tujuan, target pengguna, daftar halaman, fitur versi pertama, fitur yang ditunda, dan kriteria selesai.</pre><button class="copy-btn">Salin prompt</button></div>
       </div>
@@ -441,15 +451,16 @@ footer::before{content:"\25C6  \25C6  \25C6";display:block;text-align:center;col
       <div class="phase-body">
         <h4>Daftar tugas</h4>
         <ul class="tasks">
-          <li><div><b>Minta agent mengusulkan stack</b> <span>(teknologi) beserta alasannya, dalam bahasa sederhana. Untuk website sederhana, framework modern seperti Next.js / Astro atau bahkan HTML statis sudah cukup — yang penting agent menjelaskannya dan kamu paham konsekuensinya.</span></div></li>
+          <li><div><b>Pakai stack default panduan ini — jangan pilih-pilih lagi:</b> <span>Next.js + TypeScript + PostgreSQL + Prisma, deploy di Vercel + database Neon/Supabase — <b>Opsi A</b>. Semua contoh, AGENTS.md, dan SQL di panduan ini ditulis untuk stack ini. Laravel + MySQL (Opsi B) hanya lampiran alternatif di Dokumentasi Bab 6, bukan pilihan yang setara untuk proyek pertama ini.</span></div></li>
           <li><div><b>Agent membuat kerangka proyek</b> <span>(scaffolding) dan menginstall dependency yang dibutuhkan.</span></div></li>
           <li><div><b>Jalankan proyek secara lokal</b> <span>dan buka di browser (biasanya di alamat <span class="mono">localhost</span>). Ini “dapur”-mu — yang online nanti adalah hasil akhirnya.</span></div></li>
           <li><div><b>Inisialisasi Git &amp; commit pertama,</b> <span>lalu hubungkan ke repository GitHub. Commit = menyimpan titik aman yang bisa kamu kembalikan kapan pun.</span></div></li>
+          <li><div><b>Kerjakan di branch fitur, gabung lewat pull request (5 langkah):</b> <span>1) <span class="mono">git checkout -b feat/login</span> — pindah ke salinan kerja baru bernama <span class="mono">feat/login</span>. 2) Kerjakan satu fitur, lalu <span class="mono">git add .</span> dan <span class="mono">git commit -m "feat: tambah halaman login"</span>. 3) <span class="mono">git push -u origin feat/login</span>. 4) Di GitHub, klik “Compare &amp; pull request”, baca diff-mu sendiri, lalu klik “Create pull request”. 5) Klik “Merge pull request”, lalu kembali ke main dengan <span class="mono">git checkout main</span> dan <span class="mono">git pull</span>. Perintahnya sama di Windows (PowerShell) dan Linux (bash). Di proyek solo, pull request = kamu memeriksa pekerjaanmu sendiri sebelum digabung — tidak ada reviewer lain. Istilahnya ada di <a href="dokumentasi.html#glosarium">Glosarium</a>.</span></div></li>
           <li><div><b>Minta agent menulis <span class="mono">README.md</span>:</b> <span>cara menjalankan proyek, struktur folder, dan perintah penting. Ini penyelamat saat kamu kembali ke proyek setelah libur panjang.</span></div></li>
         </ul>
         <div class="tip"><b>Tips:</b> Biasakan commit setiap selesai satu bagian yang bekerja, dengan pesan yang jelas (“tambah halaman katalog”). Commit kecil-kecil = mudah melacak dan mudah mundur kalau ada yang rusak.</div>
         <h4>Contoh prompt</h4>
-        <div class="promptbox"><pre data-copy>Baca BRIEF.md. Usulkan stack teknologi paling sederhana yang cocok untuk website ini, jelaskan pro-kontranya dalam bahasa pemula. Jika saya setuju, buat kerangka proyeknya, jalankan secara lokal, dan tunjukkan cara saya membukanya di browser. Setelah itu, inisialisasi Git, buat commit pertama, dan tuliskan README.md berisi cara menjalankan proyek ini.</pre><button class="copy-btn">Salin prompt</button></div>
+        <div class="promptbox"><pre data-copy>Baca BRIEF.md. Pakai stack default panduan ini — Next.js + TypeScript + PostgreSQL + Prisma — dan jelaskan tiap bagiannya dalam bahasa pemula. Buat kerangka proyeknya, jalankan secara lokal, dan tunjukkan cara saya membukanya di browser. Setelah itu, inisialisasi Git, buat branch feat/setup, commit pertama, dan tuliskan README.md berisi cara menjalankan proyek ini.</pre><button class="copy-btn">Salin prompt</button></div>
       </div>
     </article>
 
@@ -496,6 +507,44 @@ Ubah hanya tiga hal itu, jangan ubah bagian lain. Setelah selesai, jelaskan file
         <div class="promptbox"><pre data-copy>Ada bug. Di halaman Kontak, saat form dikirim dalam keadaan kosong, muncul pesan error berbahasa Inggris dan halamannya jadi kosong. Seharusnya: muncul peringatan berbahasa Indonesia di bawah kolom yang kosong, tanpa pindah halaman. Jelaskan dulu dugaan penyebabnya, lalu perbaiki, lalu tunjukkan cara saya memverifikasinya.</pre><button class="copy-btn">Salin prompt</button></div>
       </div>
     </article>
+
+    <!-- TROUBLESHOOTING -->
+    <section id="troubleshooting" class="chapter">
+      <h2>Troubleshooting — kalau mentok, mulai dari sini</h2>
+      <p class="sub">Hampir semua pemula menabrak error yang sama. Jangan panik, jangan hapus proyekmu — cari gejalanya di bawah, ikuti langkahnya, dan kalau masih buntu, tempel pesan error lengkap ke agent (prompt di bawah).</p>
+      <div class="card">
+        <h3>1 · <span class="mono">npm install</span> gagal, layar penuh tulisan merah</h3>
+        <p><b>Penyebab paling umum:</b> cache rusak, Node.js terlalu lama, atau jaringan terputus di tengah unduhan.</p>
+        <p><b>Perbaiki — Windows &amp; Linux sama:</b> hapus folder <span class="mono">node_modules</span> dan file <span class="mono">package-lock.json</span>, lalu jalankan <span class="mono">npm install</span> lagi. Periksa dulu <span class="mono">node -v</span> — harus v20 atau lebih baru. Di Linux, jangan memakai <span class="mono">sudo</span> untuk npm; itu justru merusak izin folder.</p>
+      </div>
+      <div class="card">
+        <h3>2 · Perintah tidak dikenali — <span class="mono">‘node’ is not recognized</span> / <span class="mono">command not found</span></h3>
+        <p><b>Penyebab paling umum:</b> program sudah terinstal, tapi terminal dibuka sebelum instalasi selesai, jadi terminal belum “melihat” program itu.</p>
+        <p><b>Perbaiki — Windows:</b> tutup terminal sepenuhnya, buka lagi, coba <span class="mono">node -v</span>. Kalau masih gagal, instal ulang Node.js dan pastikan opsi “Add to PATH” tercentang. <b>Linux:</b> tutup terminal, buka baru, cek <span class="mono">which node</span> — kalau kosong, instal ulang Node.js LTS.</p>
+      </div>
+      <div class="card">
+        <h3>3 · Port 3000 sudah dipakai — <span class="mono">EADDRINUSE</span> / “port already in use”</h3>
+        <p><b>Penyebab paling umum:</b> proyek lama masih jalan di terminal lain (atau terminal yang tertutup tapi prosesnya belum mati).</p>
+        <p><b>Perbaiki — Windows (PowerShell):</b> jalankan proyek di port lain: <span class="mono">npm run dev -- -p 3001</span>, lalu buka <span class="mono">localhost:3001</span>. <b>Linux:</b> cari prosesnya dengan <span class="mono">lsof -i :3000</span>, matikan dengan <span class="mono">kill &lt;PID&gt;</span>, atau pakai port 3001 seperti di Windows.</p>
+      </div>
+      <div class="card">
+        <h3>4 · Login GitHub gagal — <span class="mono">Permission denied (publickey)</span> / diminta password terus</h3>
+        <p><b>Penyebab paling umum:</b> GitHub tidak lagi menerima password untuk push; ia minta login lewat browser atau token.</p>
+        <p><b>Perbaiki — Windows &amp; Linux sama:</b> pastikan remote memakai HTTPS (<span class="mono">git remote -v</span> harus berawalan <span class="mono">https://</span>), lalu push lagi dan login lewat jendela browser yang muncul. Jangan pernah menempel token atau kata sandi ke chat AI.</p>
+      </div>
+      <div class="card">
+        <h3>5 · Build gagal — <span class="mono">npm run build</span> merah</h3>
+        <p><b>Penyebab paling umum:</b> hampir selalu salah ketik, import yang salah, atau tipe data yang tidak cocok — bukan “proyekmu rusak total”.</p>
+        <p><b>Perbaiki — Windows &amp; Linux sama:</b> baca baris error <i>pertama</i> (bukan yang terakhir), catat nama file + nomor barisnya, lalu tempel ke agent dengan prompt di bawah. Jangan mengubah lima file sekaligus sambil menebak-nebak.</p>
+      </div>
+      <div class="card">
+        <h3>6 · Halaman blank setelah deploy</h3>
+        <p><b>Penyebab paling umum:</b> build berhasil, tapi halaman utama error — atau environment variable (mis. <span class="mono">DATABASE_URL</span>) belum diisi di platform deploy.</p>
+        <p><b>Perbaiki — Windows &amp; Linux sama:</b> buka log deploy di dashboard Vercel dan baca error pertamanya. Isi <span class="mono">DATABASE_URL</span> dan <span class="mono">JWT_SECRET</span> di Settings → Environment Variables, lalu deploy ulang (Redeploy). Cek lagi di alamat production, bukan di localhost.</p>
+      </div>
+      <h4>Prompt siap salin saat mentok</h4>
+      <div class="promptbox"><pre data-copy>Saya mendapat error ini: [tempel pesan error lengkap, termasuk perintah yang saya jalankan dan di file apa]. Jelaskan artinya dengan bahasa sederhana, beri tahu file apa yang harus saya periksa dulu, dan jangan mengubah apa pun sebelum saya setuju.</pre><button class="copy-btn">Salin prompt</button></div>
+    </section>
 
     <!-- FASE 6 -->
     <article class="phase" id="fase-6">

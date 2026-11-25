@@ -301,7 +301,7 @@ footer::before{content:"\25C6  \25C6  \25C6";display:block;text-align:center;col
 </header>
 <div class="layout">
 <aside class="sidebar" id="sidebar">
-  <p class="side-label">Daftar Isi &middot; 16 Bab</p>
+  <p class="side-label">Daftar Isi &middot; 17 Bab</p>
   <nav class="toc" aria-label="Daftar isi">
   <div class="row">
     <a href="#peta">Peta Dokumen</a>
@@ -319,7 +319,8 @@ footer::before{content:"\25C6  \25C6  \25C6";display:block;text-align:center;col
     <a href="#deploy">12 · Deploy</a>
     <a href="#devlog">13 · Devlog</a>
     <a href="#prompt">Prompt AI</a>
-    <a href="#glosarium">Glosarium</a>
+    <a href="#referensi">Referensi</a>
+    <a href="#glosarium">14 · Glosarium</a>
   </div>
 </nav>
 </aside>
@@ -345,24 +346,24 @@ footer::before{content:"\25C6  \25C6  \25C6";display:block;text-align:center;col
 <section id="peta">
   <div class="sec-head"><div class="sec-num">✦</div><div>
     <h2>Peta dokumen: apa saja yang dibutuhkan?</h2>
-    <p class="sec-sub">Tidak semua proyek butuh semua dokumen. Untuk website skala kecil–menengah, empat belas dokumen ini adalah paket yang sehat — sembilan dokumen perencanaan &amp; teknis, ditambah AGENTS.md, rencana implementasi, roadmap, backlog, dan devlog untuk menjalankan proyeknya. Urutannya dari atas ke bawah = urutan pengerjaannya.</p>
+    <p class="sec-sub">Tidak semua proyek butuh semua dokumen. Untuk website skala kecil–menengah, empat belas dokumen ini adalah satu paket yang saling nyambung — dan penomorannya sama persis dengan nomor bab di halaman ini (Bab 1 = Dokumen 1, dan seterusnya). Urutannya dari atas ke bawah = urutan pengerjaannya.</p>
   </div></div>
 
   <div class="grid c3" style="margin-top:18px">
     <div class="doc-card"><span class="tag">01 · WAJIB</span><h3>PRD</h3><p>Product Requirements Document — tujuan produk, siapa penggunanya, fitur apa saja, dan batasannya. Dokumen induk yang dirujuk semua dokumen lain.</p><p class="when">Dibuat: <span>paling awal, sebelum desain &amp; kode</span></p></div>
-    <div class="doc-card"><span class="tag">02 · WAJIB</span><h3>User Flow</h3><p>Alur langkah pengguna dari masuk sampai tujuannya tercapai. Menemukan langkah yang membingungkan sebelum terlanjur dibuat.</p><p class="when">Dibuat: <span>setelah PRD, sebelum wireframe</span></p></div>
+    <div class="doc-card"><span class="tag">02 · WAJIB</span><h3>User Flow</h3><p>Alur langkah pengguna dari masuk sampai tujuannya tercapai. Menemukan langkah yang membingungkan sebelum terlanjur dibuat. Wireframe — sketsa kasar tiap halaman — adalah bagian dari langkah ini (dibuat di Workflow Fase 2), bukan dokumen bernomor sendiri.</p><p class="when">Dibuat: <span>setelah PRD, sebelum wireframe</span></p></div>
     <div class="doc-card"><span class="tag">03 · WAJIB</span><h3>ERD</h3><p>Entity Relationship Diagram — peta data: tabel apa saja yang ada, isinya apa, dan bagaimana mereka saling berhubungan.</p><p class="when">Dibuat: <span>setelah fitur di PRD jelas</span></p></div>
     <div class="doc-card"><span class="tag">04 · WAJIB</span><h3>Skema Database</h3><p>Turunan ERD yang teknis: nama tabel, kolom, tipe data, kunci, dan aturan unik. Inilah yang dieksekusi jadi database sungguhan.</p><p class="when">Dibuat: <span>langsung dari ERD</span></p></div>
     <div class="doc-card"><span class="tag">05 · PERLU</span><h3>Spesifikasi API</h3><p>Daftar endpoint yang disediakan backend: alamatnya, data yang dikirim, dan data yang dikembalikan. Kontrak antara frontend dan backend.</p><p class="when">Dibuat: <span>setelah skema database</span></p></div>
-    <div class="doc-card"><span class="tag">06 · PERLU</span><h3>Arsitektur &amp; Tech Stack</h3><p>Teknologi yang dipakai dan alasan memilihnya, plus gambar besar cara komponen saling terhubung.</p><p class="when">Dibuat: <span>sebelum mulai ngoding</span></p></div>
-    <div class="doc-card"><span class="tag">07 · PERLU</span><h3>Wireframe</h3><p>Sketsa kasar tampilan tiap halaman: elemen apa di posisi mana, tanpa warna dan detail. Murah diubah, mahal kalau sudah jadi kode.</p><p class="when">Dibuat: <span>setelah user flow</span></p></div>
-    <div class="doc-card"><span class="tag">08 · WAJIB</span><h3>Rencana Testing &amp; UAT</h3><p>Skenario pengujian: fitur diuji dengan cara apa dan hasil benarnya seperti apa. UAT = pengguna asli mencoba dan menyatakan “ini sesuai kebutuhan”.</p><p class="when">Dibuat: <span>selama development, dijalankan sebelum rilis</span></p></div>
-    <div class="doc-card"><span class="tag">09 · WAJIB</span><h3>Checklist Deployment</h3><p>Langkah menaikkan website ke production: domain, hosting, variabel rahasia, backup, sampai pengecekan setelah tayang.</p><p class="when">Dibuat: <span>menjelang rilis</span></p></div>
-    <div class="doc-card"><span class="tag">10 · WAJIB*</span><h3>AGENTS.md</h3><p>File aturan main untuk AI agent di dalam repo: perannya, perintah yang boleh dan dilarang, struktur folder, cara menjalankan &amp; menguji proyek. *Wajib bila bekerja dengan AI agentic.</p><p class="when">Dibuat: <span>saat repo dibuat, sebelum agent menulis kode</span></p></div>
-    <div class="doc-card"><span class="tag">11 · WAJIB</span><h3>Implementation Plan</h3><p>Rencana implementasi bertahap per fase/minggu: tujuan, daftar tugas, dan Definition of Done tiap fase. Penerjemah PRD menjadi pekerjaan nyata.</p><p class="when">Dibuat: <span>setelah PRD, ERD &amp; arsitektur selesai</span></p></div>
-    <div class="doc-card"><span class="tag">12 · PERLU</span><h3>Roadmap</h3><p>Linimasa visual 4–6 minggu dari setup sampai production dan maintenance, dengan milestone yang bisa dicek tiap minggu.</p><p class="when">Dibuat: <span>bersamaan dengan implementation plan</span></p></div>
-    <div class="doc-card"><span class="tag">13 · WAJIB</span><h3>Product Backlog</h3><p>Daftar semua user story / fitur yang diurutkan prioritas (P0/P1/P2), lengkap dengan estimasi dan status. Sumber tunggal “apa yang dikerjakan berikutnya”.</p><p class="when">Dibuat: <span>dari user story di PRD, diperbarui tiap minggu</span></p></div>
-    <div class="doc-card"><span class="tag">14 · PERLU</span><h3>Devlog</h3><p>Development log — catatan harian/mingguan pengembangan: yang dikerjakan, keputusan, kendala, dan langkah berikutnya. Ingatan proyek yang tidak hilang antar sesi.</p><p class="when">Dibuat: <span>diisi setiap hari kerja, sejak hari pertama</span></p></div>
+    <div class="doc-card"><span class="tag">06 · PERLU</span><h3>Arsitektur &amp; Tech Stack</h3><p>Teknologi yang dipakai dan alasan memilihnya, plus gambar besar cara komponen saling terhubung. Stack default panduan ini: Opsi A (Next.js + PostgreSQL + Prisma).</p><p class="when">Dibuat: <span>sebelum mulai ngoding</span></p></div>
+    <div class="doc-card"><span class="tag">07 · WAJIB*</span><h3>AGENTS.md</h3><p>File aturan main untuk AI agent di dalam repo: perannya, perintah yang boleh dan dilarang, struktur folder, cara menjalankan &amp; menguji proyek. *Wajib bila bekerja dengan AI agentic.</p><p class="when">Dibuat: <span>saat repo dibuat, sebelum agent menulis kode</span></p></div>
+    <div class="doc-card"><span class="tag">08 · WAJIB</span><h3>Implementation Plan</h3><p>Rencana implementasi bertahap per fase/minggu: tujuan, daftar tugas, dan Definition of Done tiap fase. Penerjemah PRD menjadi pekerjaan nyata.</p><p class="when">Dibuat: <span>setelah PRD, ERD &amp; arsitektur selesai</span></p></div>
+    <div class="doc-card"><span class="tag">09 · PERLU</span><h3>Roadmap</h3><p>Linimasa visual 4–6 minggu dari setup sampai production dan maintenance, dengan milestone yang bisa dicek tiap minggu.</p><p class="when">Dibuat: <span>bersamaan dengan implementation plan</span></p></div>
+    <div class="doc-card"><span class="tag">10 · WAJIB</span><h3>Product Backlog</h3><p>Daftar semua user story / fitur yang diurutkan prioritas (P0/P1/P2), lengkap dengan estimasi dan status. Sumber tunggal “apa yang dikerjakan berikutnya”.</p><p class="when">Dibuat: <span>dari user story di PRD, diperbarui tiap minggu</span></p></div>
+    <div class="doc-card"><span class="tag">11 · WAJIB</span><h3>Rencana Testing &amp; UAT</h3><p>Skenario pengujian: fitur diuji dengan cara apa dan hasil benarnya seperti apa. UAT = pengguna asli mencoba dan menyatakan “ini sesuai kebutuhan”.</p><p class="when">Dibuat: <span>selama development, dijalankan sebelum rilis</span></p></div>
+    <div class="doc-card"><span class="tag">12 · WAJIB</span><h3>Deploy</h3><p>Langkah menaikkan website ke production: domain, hosting, variabel rahasia, backup, sampai pengecekan setelah tayang — plus cara rollback bila gagal.</p><p class="when">Dibuat: <span>menjelang rilis</span></p></div>
+    <div class="doc-card"><span class="tag">13 · PERLU</span><h3>Devlog</h3><p>Development log — catatan harian/mingguan pengembangan: yang dikerjakan, keputusan, kendala, dan langkah berikutnya. Ingatan proyek yang tidak hilang antar sesi.</p><p class="when">Dibuat: <span>diisi setiap hari kerja, sejak hari pertama</span></p></div>
+    <div class="doc-card"><span class="tag">14 · PERLU</span><h3>Glosarium</h3><p>Daftar istilah yang dipakai di seluruh paket, masing-masing dijelaskan satu kalimat dengan contoh dari website KPI perpajakan. Buka ini kapan pun menemukan istilah yang belum paham.</p><p class="when">Dibuat: <span>diisi sambil jalan, sejak bab pertama</span></p></div>
   </div>
 
   <h3>Urutan kerja dari nol sampai tayang</h3>
@@ -371,7 +372,7 @@ footer::before{content:"\25C6  \25C6  \25C6";display:block;text-align:center;col
       <div class="step"><div class="n"></div><div><b>Tulis PRD</b><p>Jawab: masalah apa, untuk siapa, fitur versi pertama (MVP) apa saja. Batasi dengan tega — fitur “nanti saja” tulis di daftar terpisah.</p></div></div>
       <div class="step"><div class="n"></div><div><b>Gambar user flow &amp; wireframe</b><p>Telusuri perjalanan pengguna di atas kertas. Kalau alurnya saja sudah ribet, tampilannya pasti ribet.</p></div></div>
       <div class="step"><div class="n"></div><div><b>Rancang ERD, lalu skema database</b><p>Tentukan entitas dari kata benda di PRD: pengguna, departemen, KPI, target, realisasi, penilaian.</p></div></div>
-      <div class="step"><div class="n"></div><div><b>Susun spesifikasi API &amp; pilih tech stack</b><p>Endpoint mengikuti kebutuhan halaman. Stack pilih yang paling dikuasai / paling mudah dibantu AI.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Susun spesifikasi API &amp; pakai stack default</b><p>Endpoint mengikuti kebutuhan halaman. Stack default panduan ini: Opsi A — Next.js + TypeScript + PostgreSQL + Prisma (lihat Bab 6). Jangan pilih-pilih lagi di tahap ini.</p></div></div>
       <div class="step"><div class="n"></div><div><b>Development per fitur</b><p>Kerjakan satu fitur vertikal sampai jalan (halaman + API + database), baru pindah. Jangan buat semua halaman dulu baru menyambungkannya.</p></div></div>
       <div class="step"><div class="n"></div><div><b>Testing &amp; UAT</b><p>Jalankan skenario uji, lalu minta calon pengguna asli mencoba. Catat bug sebagai daftar, perbaiki berdasarkan prioritas.</p></div></div>
       <div class="step"><div class="n"></div><div><b>Deploy ke production</b><p>Ikuti checklist deployment, cek ulang di alamat asli, dan siapkan cara kembali ke versi sebelumnya (rollback) bila ada masalah.</p></div></div>
@@ -385,6 +386,9 @@ footer::before{content:"\25C6  \25C6  \25C6";display:block;text-align:center;col
     <h2>PRD — Product Requirements Document</h2>
     <p class="sec-sub">Dokumen yang menjawab <strong class="k">apa yang dibangun dan kenapa</strong>, bukan bagaimana cara ngodingnya. Kalau di tengah proyek muncul keraguan “fitur ini perlu nggak ya?”, jawabannya dicari di PRD.</p>
   </div></div>
+
+  <div class="callout"><b>Untuk pemula — PRD itu apa, sederhananya?</b> PRD adalah surat perjanjian tertulis antara kamu dan (siapa pun yang membangun, termasuk AI): “website ini dibuat untuk <i>siapa</i>, menyelesaikan <i>masalah apa</i>, dan kita tahu ia berhasil kalau <i>apa</i>.” Bukan daftar kode, bukan desain — tapi jawaban atas tiga pertanyaan itu. Kalau kamu hanya punya 1 jam, isi bagian Latar belakang, Tujuan, dan Ruang lingkup — tiga itu saja sudah cukup untuk memulai.</div>
+  <div class="callout"><b>BRIEF.md vs PRD — ini dokumen yang sama, beda tahap.</b> <span class="mono">BRIEF.md</span> adalah brief 1 halaman yang ditulis dulu di Workflow Fase 1. Setelah disetujui, ia <i>tumbuh</i> menjadi PRD lengkap dan disimpan sebagai <span class="mono">docs/PRD.md</span> di repo. Jangan membuat dua dokumen berbeda yang isinya bertentangan.</div>
 
   <h3>Struktur PRD yang baik</h3>
   <table class="tbl">
@@ -513,6 +517,8 @@ TIDAK MASUK: [fitur yang sengaja ditunda — tulis eksplisit]
     <p class="sec-sub">Peta data website: <strong class="k">entitas</strong> (calon tabel), <strong class="k">atribut</strong> (calon kolom), dan <strong class="k">relasi</strong> antar-entitas. Klik nama entitas pada diagram untuk menyorot relasinya dan membaca penjelasannya.</p>
   </div></div>
 
+  <div class="callout"><b>Untuk pemula — cara membaca diagram ini.</b> Setiap kotak adalah satu tabel (mis. <span class="mono">users</span> = semua orang yang bisa login). Baris di dalam kotak adalah kolomnya; <span class="mono">PK</span> = identitas unik tiap baris, <span class="mono">FK</span> = kolom yang menunjuk ke tabel lain. Garis antar kotak adalah relasi, dan tulisan <span class="mono">1 — N</span> artinya “satu ke banyak”: satu departemen punya banyak karyawan, tapi satu karyawan hanya di satu departemen. Klik nama entitas pada diagram untuk menyorot relasinya. Kalau ada relasi M—N (banyak ke banyak), ia tidak bisa disimpan langsung — pecah dengan tabel penghubung (lihat Glosarium: Kardinalitas).</div>
+
   <div class="erd-scroll">
     <svg viewBox="0 0 920 600" role="img" aria-label="Diagram ERD website KPI: departments, users, kpis, kpi_targets, kpi_actuals, reviews">
       <!-- relations -->
@@ -640,22 +646,88 @@ TIDAK MASUK: [fitur yang sengaja ditunda — tulis eksplisit]
   <table class="tbl">
     <thead><tr><th>Tabel · Kolom</th><th>Tipe</th><th>Aturan</th></tr></thead>
     <tbody>
-      <tr><td data-l="Kolom"><code>users.id</code></td><td data-l="Tipe">BIGINT</td><td data-l="Aturan">PK, auto-increment</td></tr>
+      <tr><td data-l="Kolom"><code>users.id</code></td><td data-l="Tipe">BIGINT</td><td data-l="Aturan">PK, nomor urut otomatis (IDENTITY)</td></tr>
       <tr><td data-l="Kolom"><code>users.email</code></td><td data-l="Tipe">VARCHAR(255)</td><td data-l="Aturan">UNIQUE, NOT NULL — satu email satu akun</td></tr>
       <tr><td data-l="Kolom"><code>users.password_hash</code></td><td data-l="Tipe">VARCHAR(255)</td><td data-l="Aturan">NOT NULL — hash saja, tidak pernah teks asli</td></tr>
-      <tr><td data-l="Kolom"><code>users.role</code></td><td data-l="Tipe">ENUM</td><td data-l="Aturan"><code>admin</code> · <code>manager</code> · <code>employee</code></td></tr>
+      <tr><td data-l="Kolom"><code>users.role</code></td><td data-l="Tipe">VARCHAR(20)</td><td data-l="Aturan"><code>admin</code> · <code>manager</code> · <code>employee</code></td></tr>
       <tr><td data-l="Kolom"><code>users.department_id</code></td><td data-l="Tipe">BIGINT</td><td data-l="Aturan">FK → departments.id</td></tr>
       <tr><td data-l="Kolom"><code>kpis.weight</code></td><td data-l="Tipe">DECIMAL(5,2)</td><td data-l="Aturan">Bobot persen; total bobot per departemen = 100</td></tr>
       <tr><td data-l="Kolom"><code>kpi_targets.period</code></td><td data-l="Tipe">CHAR(7)</td><td data-l="Aturan">Format <code>YYYY-MM</code>; UNIQUE gabungan (kpi_id, user_id, period)</td></tr>
-      <tr><td data-l="Kolom"><code>kpi_actuals.status</code></td><td data-l="Tipe">ENUM</td><td data-l="Aturan"><code>draft</code> · <code>submitted</code> · <code>approved</code> · <code>revision</code></td></tr>
-      <tr><td data-l="Kolom"><code>reviews.decision</code></td><td data-l="Tipe">ENUM</td><td data-l="Aturan"><code>approved</code> · <code>revision</code>; comment wajib bila revision</td></tr>
+      <tr><td data-l="Kolom"><code>kpi_actuals.status</code></td><td data-l="Tipe">VARCHAR(20)</td><td data-l="Aturan"><code>draft</code> · <code>submitted</code> · <code>approved</code> · <code>revision</code></td></tr>
+      <tr><td data-l="Kolom"><code>reviews.decision</code></td><td data-l="Tipe">VARCHAR(20)</td><td data-l="Aturan"><code>approved</code> · <code>revision</code>; comment wajib bila revision</td></tr>
     </tbody>
   </table>
 
-  <h3>Contoh SQL (PostgreSQL / MySQL mirip)</h3>
+  <h3>Contoh SQL — PostgreSQL (dipakai panduan ini)</h3>
+  <p>Stack default panduan ini adalah PostgreSQL (Opsi A, lihat Bab 6), jadi blok di bawah ini adalah yang kamu pakai. PostgreSQL tidak mengenal <span class="mono">AUTO_INCREMENT</span> dan tipe kolom <span class="mono">ENUM</span> seperti MySQL — sebagai gantinya dipakai <span class="mono">GENERATED ALWAYS AS IDENTITY</span> untuk nomor urut otomatis dan <span class="mono">CHECK (... IN (...))</span> untuk daftar nilai tetap.</p>
   <div class="codebox">
     <button class="copy-btn" data-copy="tpl-sql">Salin SQL</button>
 <pre id="tpl-sql">CREATE TABLE departments (
+  id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name        VARCHAR(100) NOT NULL,
+  manager_id  BIGINT NULL
+);
+
+CREATE TABLE users (
+  id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  name          VARCHAR(100) NOT NULL,
+  email         VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role          VARCHAR(20) NOT NULL CHECK (role IN ('admin','manager','employee')),
+  department_id BIGINT NULL,
+  FOREIGN KEY (department_id) REFERENCES departments(id)
+);
+
+CREATE TABLE kpis (
+  id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  department_id BIGINT NOT NULL,
+  name          VARCHAR(150) NOT NULL,
+  description   TEXT,
+  unit          VARCHAR(30),
+  weight        DECIMAL(5,2) NOT NULL DEFAULT 0,
+  FOREIGN KEY (department_id) REFERENCES departments(id)
+);
+
+CREATE TABLE kpi_targets (
+  id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  kpi_id       BIGINT NOT NULL,
+  user_id      BIGINT NOT NULL,
+  period       CHAR(7) NOT NULL,          -- '2026-11'
+  target_value DECIMAL(14,2) NOT NULL,
+  UNIQUE (kpi_id, user_id, period),
+  FOREIGN KEY (kpi_id)  REFERENCES kpis(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE kpi_actuals (
+  id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  kpi_id       BIGINT NOT NULL,
+  user_id      BIGINT NOT NULL,
+  period       CHAR(7) NOT NULL,
+  actual_value DECIMAL(14,2) NOT NULL,
+  evidence_url VARCHAR(500),
+  status       VARCHAR(20) NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','submitted','approved','revision')),
+  UNIQUE (kpi_id, user_id, period),
+  FOREIGN KEY (kpi_id)  REFERENCES kpis(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE reviews (
+  id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  actual_id   BIGINT NOT NULL,
+  reviewer_id BIGINT NOT NULL,
+  decision    VARCHAR(20) NOT NULL CHECK (decision IN ('approved','revision')),
+  comment     TEXT,
+  reviewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (actual_id)   REFERENCES kpi_actuals(id),
+  FOREIGN KEY (reviewer_id) REFERENCES users(id)
+);</pre>
+  </div>
+  <h3>Contoh SQL — MySQL (hanya bila memakai Opsi B / Laravel)</h3>
+  <p>Versi ini <b>hanya</b> untuk Opsi B (lampiran alternatif). Jangan jalankan kedua versi — pilih satu sesuai stack-mu. Perbedaannya cuma dua: <span class="mono">AUTO_INCREMENT</span> untuk nomor urut dan tipe kolom <span class="mono">ENUM</span> untuk daftar nilai tetap.</p>
+  <div class="codebox">
+    <button class="copy-btn" data-copy="tpl-sql-mysql">Salin SQL MySQL</button>
+<pre id="tpl-sql-mysql">CREATE TABLE departments (
   id          BIGINT PRIMARY KEY AUTO_INCREMENT,
   name        VARCHAR(100) NOT NULL,
   manager_id  BIGINT NULL
@@ -717,7 +789,8 @@ CREATE TABLE reviews (
   FOREIGN KEY (reviewer_id) REFERENCES users(id)
 );</pre>
   </div>
-  <p class="mini">Aturan emas skema: setiap tabel punya <b>PK</b>, setiap relasi diwujudkan sebagai <b>FK</b>, data yang tidak boleh dobel dilindungi <b>UNIQUE</b>, dan status memakai daftar nilai tetap (<b>ENUM</b>) — bukan teks bebas yang rawan salah ketik.</p>
+  <div class="callout"><b>Cara menjalankan SQL ini — baca dulu, jangan langsung salin.</b> Kalau memakai Prisma (stack default), SQL di atas adalah <i>referensi</i>: yang dieksekusi adalah migrasi Prisma (<span class="mono">npx prisma migrate dev</span>), bukan SQL ini langsung. Kalau memakai Supabase/Neon, tempel SQL PostgreSQL di SQL Editor mereka. Jangan jalankan SQL yang sama dua kali — aturan <span class="mono">UNIQUE</span> akan menolak baris duplikat dan kamu akan mengira database-mu rusak.</div>
+  <p class="mini">Aturan emas skema: setiap tabel punya <b>PK</b>, setiap relasi diwujudkan sebagai <b>FK</b>, data yang tidak boleh dobel dilindungi <b>UNIQUE</b>, dan status memakai daftar nilai tetap lewat <b>CHECK</b> — bukan teks bebas yang rawan salah ketik.</p>
 </section>
 
 <!-- ================= API ================= -->
@@ -771,16 +844,16 @@ Kode status yang dipakai konsisten:
   </div></div>
 
   <div class="arch">
-    <div class="layer"><h3>Frontend — yang dilihat pengguna</h3><p>Halaman &amp; form di browser. Pilihan ramah pemula: <b>Next.js</b> (React) atau <b>Laravel Blade</b>. Tugasnya hanya menampilkan dan mengirim data lewat API.</p></div>
-    <div class="layer"><h3>Backend — otak &amp; penjaga aturan</h3><p>Mengurus login, hak akses, perhitungan skor, dan validasi. Satu bahasa dengan frontend bila memungkinkan: Next.js API Routes, atau Laravel bila memilih PHP.</p></div>
-    <div class="layer"><h3>Database — tempat data tinggal</h3><p><b>PostgreSQL</b> atau <b>MySQL</b>. Struktur mengikuti skema di bagian 4 persis. File bukti disimpan di storage (mis. folder uploads / S3), database hanya menyimpan URL-nya.</p></div>
+    <div class="layer"><h3>Frontend — yang dilihat pengguna</h3><p>Halaman &amp; form di browser. Pilihan default panduan ini: <b>Next.js</b> (React). Tugasnya hanya menampilkan dan mengirim data lewat API.</p></div>
+    <div class="layer"><h3>Backend — otak &amp; penjaga aturan</h3><p>Mengurus login, hak akses, perhitungan skor, dan validasi. Satu bahasa dengan frontend: Next.js API Routes.</p></div>
+    <div class="layer"><h3>Database — tempat data tinggal</h3><p><b>PostgreSQL</b> (default panduan ini). Struktur mengikuti skema di bagian 4 persis. File bukti disimpan di storage (mis. folder uploads / S3), database hanya menyimpan URL-nya.</p></div>
   </div>
 
   <div class="grid c2" style="margin-top:14px">
     <div class="card"><h3 style="margin-top:0">Rekomendasi stack pemula</h3>
       <ul>
-        <li><b>Opsi A (JavaScript satu bahasa):</b> Next.js + PostgreSQL + Prisma, deploy di Vercel + database Neon/Supabase.</li>
-        <li><b>Opsi B (PHP klasik, banyak tutorial Indonesia):</b> Laravel + MySQL, deploy di shared hosting / VPS.</li>
+        <li><b>Opsi A — pilihan default panduan ini:</b> Next.js + TypeScript + PostgreSQL + Prisma, deploy di Vercel + database Neon/Supabase. Pakai ini untuk proyek KPI ini.</li>
+        <li><b>Opsi B — lampiran alternatif saja:</b> Laravel + MySQL, deploy di shared hosting / VPS. Hanya bila kamu sudah pernah memakai PHP/Laravel sebelumnya. Kalau memilih Opsi B, template AGENTS.md di Bab 7 harus ditulis ulang untuk Laravel — perintah, struktur folder, dan file migrasinya berbeda (lihat catatan di Bab 7).</li>
         <li><b>Kode &amp; versi:</b> Git + GitHub sejak hari pertama — setiap perubahan tercatat dan bisa di-rollback.</li>
       </ul>
     </div>
@@ -921,7 +994,17 @@ Prasyarat: Node.js 20+, PostgreSQL berjalan (atau Neon).
 - Tidak ada rahasia ter-commit; tidak ada file di luar cakupan.
 - Devlog diperbarui dan status backlog diubah.</pre>
   </div>
-  <p class="mini">Sesuaikan bagian stack &amp; perintah bila memakai Opsi B (Laravel): perintahnya menjadi <code>php artisan serve</code>, <code>php artisan test</code>, dan <code>php artisan migrate</code> — struktur file-nya tetap sama.</p>
+  <div class="callout"><b>Kalau memakai Opsi B (Laravel) — template di atas harus ditulis ulang, bukan sekadar diganti perintahnya.</b> Struktur foldernya berbeda total, bukan “tetap sama”:</div>
+  <table class="tbl">
+    <thead><tr><th></th><th>Opsi A — Next.js (template di atas)</th><th>Opsi B — Laravel (lampiran)</th></tr></thead>
+    <tbody>
+      <tr><td data-l=""><b>Jalankan lokal</b></td><td data-l="Opsi A"><code>npm run dev</code> → <code>localhost:3000</code></td><td data-l="Opsi B"><code>php artisan serve</code> → <code>localhost:8000</code></td></tr>
+      <tr><td data-l=""><b>Struktur folder</b></td><td data-l="Opsi A"><code>/src/app</code>, <code>/src/components</code>, <code>/prisma</code></td><td data-l="Opsi B"><code>app/</code>, <code>routes/</code>, <code>resources/views</code>, <code>database/migrations</code></td></tr>
+      <tr><td data-l=""><b>Migrasi database</b></td><td data-l="Opsi A"><code>npx prisma migrate dev</code></td><td data-l="Opsi B"><code>php artisan migrate</code></td></tr>
+      <tr><td data-l=""><b>Test</b></td><td data-l="Opsi A"><code>npm test</code> · <code>npm run lint</code></td><td data-l="Opsi B"><code>php artisan test</code></td></tr>
+    </tbody>
+  </table>
+  <p class="mini">Template AGENTS.md di atas ditulis untuk Opsi A. Jangan menempelkannya mentah-mentah ke proyek Laravel.</p>
 </section>
 
 <!-- ================= RENCANA IMPLEMENTASI ================= -->
@@ -1275,9 +1358,47 @@ Jangan menambah fitur di luar PRD. Setelah selesai, tuliskan
   <p class="mini">Pola yang sama untuk semua prompt: <b>beri konteks (dokumen) → minta satu hasil yang spesifik → larang mengarang di luar dokumen → minta cara mengujinya.</b></p>
 </section>
 
+<!-- ================= REFERENSI ================= -->
+<section id="referensi">
+  <div class="sec-head"><div class="sec-num">✦</div><div>
+    <h2>Referensi &amp; bacaan lanjutan</h2>
+    <p class="sec-sub">Sumber-sumber yang dipakai saat menyusun panduan ini — dibaca 25 November 2026. Mulai dari yang paling atas di tiap kelompok; jangan baca semuanya sekaligus.</p>
+  </div></div>
+  <div class="callout"><b>“Hermes” — yang dimaksud di panduan ini adalah Hermes Agent.</b> Ada tiga hal berbeda bernama Hermes dari Nous Research: (1) <b>Hermes Agent</b> — harness AI agentic, inilah yang dipakai panduan ini; (2) model Hermes 3/4 — “otak” open-weight untuk tool-calling; (3) Hermes MCP Toolset — kumpulan server MCP untuk analisis kode, untuk lanjutan saja.</div>
+  <h3>Menyusun PRD</h3>
+  <ul>
+    <li><a href="https://www.atlassian.com/en/software/confluence/templates/product-requirements">Template PRD Atlassian</a> — template PRD resmi + 5 langkah penulisan; definisi PRD sebagai single source of truth.</li>
+    <li><a href="https://Brco.dev/insights/product-requirements-document-template/">Template PRD brco.dev</a> — template 9 seksi yang ramah AI-coding; tiap requirement dicek: necessary, unambiguous, verifiable, traceable.</li>
+  </ul>
+  <h3>Menggambar ERD</h3>
+  <ul>
+    <li><a href="https://lucid.co/diagram/erd/tutorial?er=1">Tutorial ERD Lucid</a> — entitas, relasi, atribut, kardinalitas, dan notasi Crow&rsquo;s Foot.</li>
+    <li><a href="https://erd.workscove.com/en/blog/how-to-draw-erd">Cara menggambar ERD (WorksCove)</a> — langkah operasional: ekstrak entitas dari requirement sampai DDL yang bisa dijalankan.</li>
+    <li><a href="https://dev.to/arafatweb/design-your-database-with-dbdiagramio-beginner-to-pro-20j6">Desain database dengan dbdiagram.io</a> — praktik DBML langkah-demi-langkah: tulis teks, diagram dan SQL jadi otomatis.</li>
+  </ul>
+  <h3>Workflow agentic</h3>
+  <ul>
+    <li><a href="https://code.claude.com/docs/en/best-practices">Best Practices Claude Code (Anthropic)</a> — aturan emas kerja agentic: plan dulu, beri check yang bisa pass/fail, review diff, dan minta bukti — bukan klaim.</li>
+  </ul>
+  <h3>Skill &amp; harness agent</h3>
+  <ul>
+    <li><a href="https://github.com/obra/superpowers">obra/superpowers</a> — paket skill metodologi untuk coding agent: brainstorming, writing-plans, TDD, systematic-debugging, dan code review.</li>
+    <li><a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a> — harness AI agentic open-source yang dipakai panduan ini: MEMORY.md untuk fakta, SKILL.md untuk prosedur, AGENTS.md sebagai otak proyek; model-agnostic. Pasang Superpowers dengan <code>hermes plugins install obra/superpowers --enable</code>.</li>
+    <li><a href="https://hermes-agent.nousresearch.com/docs/guides/tips">Tips &amp; Best Practices Hermes Agent</a> — dokumentasi resmi: memori vs skill, prompt yang baik, keamanan, dan delegasi.</li>
+    <li><a href="https://agentskills.io">Agent Skills</a> — standar terbuka format skill (SKILL.md).</li>
+    <li><a href="https://github.com/anthropics/skills">Skill resmi Anthropic</a> — skill dokumen dan frontend-design; titik awal paling tepercaya.</li>
+    <li><a href="https://skills.sh/">skills.sh</a> — direktori + CLI untuk mencari dan memasang skill dari repo GitHub apa pun.</li>
+  </ul>
+  <h3>Memori konteks proyek</h3>
+  <ul>
+    <li><a href="https://github.com/Graphify-Labs/graphify">Graphify</a> — mengubah kode + dokumen menjadi knowledge graph yang bisa di-query (<code>query</code> / <code>path</code> / <code>explain</code>) untuk debugging cepat dan pencarian semantik. Pakai setelah kode melewati ~10 file. Ia mengingat <i>struktur kode</i>, bukan percakapan sesi lalu. Klaim hemat token 80% adalah klaim vendor (Graphify Cloud, berbayar) — perlakukan hati-hati.</li>
+  </ul>
+  <p class="mini">Peringatan: audit isi <span class="mono">SKILL.md</span> sebelum memasang skill komunitas — skill bisa berisi script. Untuk pemula, Superpowers + Graphify saja sudah cukup sebagai fondasi; jangan memasang puluhan skill sekaligus.</p>
+</section>
+
 <!-- ================= GLOSARIUM ================= -->
 <section id="glosarium">
-  <div class="sec-head"><div class="sec-num">✦</div><div>
+  <div class="sec-head"><div class="sec-num">14</div><div>
     <h2>Glosarium singkat</h2>
     <p class="sec-sub">Istilah yang muncul berulang di dokumen-dokumen ini.</p>
   </div></div>
@@ -1302,6 +1423,49 @@ Jangan menambah fitur di luar PRD. Setelah selesai, tuliskan
       <div><dt>Milestone</dt><dd>Hasil nyata yang bisa didemokan pada titik waktu tertentu di roadmap, mis. “demo login tiga peran”.</dd></div>
       <div><dt>Devlog</dt><dd>Development log — jurnal harian pengembangan: pekerjaan, keputusan + alasannya, kendala, pelajaran, dan langkah berikutnya.</dd></div>
       <div><dt>Environment Variable</dt><dd>Pengaturan rahasia / khusus server (mis. DATABASE_URL) yang disimpan di luar kode dan tidak pernah di-commit.</dd></div>
+      <div id="g-terminal"><dt>Terminal</dt><dd>Jendela teks tempat mengetik perintah ke komputer; seperti kolom chat, tapi yang menjawab adalah komputermu. Contoh: mengetik <code>npm run dev</code> di terminal untuk menjalankan website KPI di laptopmu.</dd></div>
+      <div id="g-localhost"><dt>Localhost</dt><dd>Alamat website yang hanya hidup di laptopmu sendiri (<code>localhost:3000</code>); orang lain belum bisa membukanya.</dd></div>
+      <div id="g-nodejs"><dt>Node.js</dt><dd>Program yang menjalankan JavaScript di laptop, supaya website bisa jalan tanpa browser.</dd></div>
+      <div id="g-npm"><dt>npm</dt><dd>Alat bawaan Node.js untuk mengunduh paket bantuan dan menjalankan perintah proyek seperti <code>npm run dev</code>.</dd></div>
+      <div id="g-scaffolding"><dt>Scaffolding</dt><dd>Kerangka proyek kosong yang dibuatkan otomatis oleh alat, supaya kamu tidak mulai dari folder kosong.</dd></div>
+      <div id="g-dependency"><dt>Dependency</dt><dd>Kode bantuan buatan orang lain yang dipakai proyekmu, misalnya pustaka untuk login atau tanggal.</dd></div>
+      <div id="g-framework"><dt>Framework</dt><dd>Kerangka kerja (mis. Next.js, Laravel): seperangkat aturan + alat yang mempercepat membangun website.</dd></div>
+      <div id="g-stack"><dt>Stack / Tech Stack</dt><dd>Kombinasi teknologi satu proyek: bahasa + framework + database + hosting. Stack default panduan ini: Next.js + PostgreSQL + Prisma.</dd></div>
+      <div id="g-git"><dt>Git</dt><dd>Program pencatat perubahan kode; mesin waktu proyekmu.</dd></div>
+      <div id="g-commit"><dt>Commit</dt><dd>Titik simpan di Git: satu paket perubahan dengan pesan yang jelas, mis. “tambah halaman login”.</dd></div>
+      <div id="g-push"><dt>Push</dt><dd>Mengirim commit dari laptopmu ke GitHub.</dd></div>
+      <div id="g-repo"><dt>Repository</dt><dd>Folder proyek yang dicatat Git, lengkap dengan riwayatnya; di GitHub, repository adalah halaman proyekmu.</dd></div>
+      <div id="g-branch"><dt>Branch</dt><dd>Salinan kerja terpisah dari jalur utama (<code>main</code>), supaya eksperimen tidak merusak website yang sudah jalan.</dd></div>
+      <div id="g-pr"><dt>Pull Request</dt><dd>Permintaan “tolong periksa lalu gabungkan kerja saya ke main”; di proyek solo, kamulah pemeriksanya.</dd></div>
+      <div id="g-lint"><dt>Lint</dt><dd>Pemeriksa otomatis gaya dan kesalahan kecil pada kode — seperti spell-check untuk kode.</dd></div>
+      <div id="g-build"><dt>Build</dt><dd>Proses mengubah kode sumber menjadi paket siap tayang; kalau build gagal, website tidak bisa di-deploy.</dd></div>
+      <div id="g-test"><dt>Test</dt><dd>Program kecil yang memeriksa “fitur ini masih jalan?” secara otomatis setiap kali kode berubah.</dd></div>
+      <div id="g-wireframe"><dt>Wireframe</dt><dd>Sketsa kasar tampilan halaman (kotak-kotak dan teks), tanpa warna — denah rumah sebelum dibangun.</dd></div>
+      <div id="g-sitemap"><dt>Sitemap</dt><dd>Daftar semua halaman website dan hubungannya.</dd></div>
+      <div id="g-hero"><dt>Hero</dt><dd>Bagian paling atas halaman utama, yang pertama dilihat pengunjung.</dd></div>
+      <div id="g-cta"><dt>CTA</dt><dd>Call to Action: tombol ajakan, mis. “Isi Realisasi” atau “Lihat Skor”.</dd></div>
+      <div id="g-frontend"><dt>Frontend</dt><dd>Bagian website yang dilihat pengguna di browser: halaman, form, tombol.</dd></div>
+      <div id="g-backend"><dt>Backend</dt><dd>Otak di server: login, hak akses, perhitungan skor, dan validasi.</dd></div>
+      <div id="g-token"><dt>Token</dt><dd>Kartu identitas sementara yang membuktikan “saya sudah login”; dikirim di setiap permintaan sesudah login.</dd></div>
+      <div id="g-hash"><dt>Hash</dt><dd>Kata sandi yang sudah diacak satu arah dan tidak bisa dikembalikan ke teks asli, jadi aman disimpan.</dd></div>
+      <div id="g-migrasi"><dt>Migrasi</dt><dd>File langkah-demi-langkah yang mengubah struktur database (tambah tabel/kolom) dengan cara yang bisa diulang dan dibatalkan.</dd></div>
+      <div id="g-seed"><dt>Seed</dt><dd>Data awal yang dimasukkan sekali saat pertama kali, mis. akun admin pertama.</dd></div>
+      <div id="g-softdelete"><dt>Soft delete</dt><dd>Menonaktifkan data (ditandai tidak aktif) tanpa benar-benar menghapusnya — mis. menonaktifkan akun karyawan yang pindah divisi.</dd></div>
+      <div id="g-dns"><dt>DNS</dt><dd>Buku alamat internet: nama domain diterjemahkan ke alamat server.</dd></div>
+      <div id="g-ssl"><dt>SSL / HTTPS</dt><dd>Gembok di browser: koneksi terenkripsi; HTTPS = HTTP + SSL.</dd></div>
+      <div id="g-domain"><dt>Domain</dt><dd>Nama alamat website, mis. <code>kpi.kantor.id</code>, yang dibeli lalu diarahkan ke hosting.</dd></div>
+      <div id="g-pm2"><dt>PM2</dt><dd>Penjaga yang membuat aplikasi Node.js tetap jalan di server VPS.</dd></div>
+      <div id="g-nginx"><dt>Nginx</dt><dd>Pintu depan server yang meneruskan pengunjung ke aplikasi.</dd></div>
+      <div id="g-smoke"><dt>Smoke test</dt><dd>Uji cepat “apakah yang paling penting masih jalan?” setelah deploy: login → isi realisasi → tinjau.</dd></div>
+      <div id="g-tag"><dt>Tag</dt><dd>Label versi (mis. <code>v1.0.0</code>) yang ditempel pada satu commit sebagai penanda rilis.</dd></div>
+      <div id="g-spt"><dt>SPT Masa</dt><dd>Surat Pemberitahuan pajak masa (bulanan), mis. laporan PPh bulanan.</dd></div>
+      <div id="g-efaktur"><dt>e-Faktur</dt><dd>Faktur pajak elektronik yang diterbitkan lewat aplikasi DJP.</dd></div>
+      <div id="g-rekonsiliasi"><dt>Rekonsiliasi</dt><dd>Pencocokan dua sumber data (mis. pembukuan vs SPT) sampai angkanya sama.</dd></div>
+      <div id="g-skill"><dt>Skill (AI)</dt><dd>Sekumpulan instruksi + checklist + template yang dipanggil agent saat mengerjakan satu jenis tugas.</dd></div>
+      <div id="g-agent"><dt>Agent (AI)</dt><dd>AI yang bisa merencanakan, bertindak, dan memeriksa sendiri — bukan sekadar menjawab chat.</dd></div>
+      <div id="g-hermes"><dt>Hermes Agent</dt><dd>Harness AI agentic open-source dari Nous Research yang dipakai panduan ini; bedakan dari model Hermes 3/4 dan Hermes MCP Toolset.</dd></div>
+      <div id="g-graphify"><dt>Graphify</dt><dd>Alat yang memetakan kode + dokumen menjadi knowledge graph yang bisa di-query, untuk debugging cepat dan pencarian semantik di proyek.</dd></div>
+      <div id="g-superpowers"><dt>Superpowers</dt><dd>Paket skill metodologi untuk coding agent: brainstorming, writing-plans, TDD, debugging sistematis, dan code review.</dd></div>
     </dl>
   </div>
 
