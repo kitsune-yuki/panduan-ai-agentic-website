@@ -63,7 +63,7 @@ button{min-height:2.5rem;font-family:"Plus Jakarta Sans",system-ui,sans-serif}
 .toc ol{list-style:none;margin:0;padding:0;counter-reset:bab}
 .toc li{margin:0}
 .toc a{display:block;text-decoration:none;color:var(--muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:.88rem;font-weight:600;line-height:1.45;padding:7px 10px;border-radius:8px;border-left:2px solid transparent}
-.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a:hover{color:var(--ink);background:transparent;text-decoration:underline;text-underline-offset:3px}
 .toc a.active{color:var(--accent);background:var(--accent-soft);border-left-color:var(--accent)}
 .toc .sub-list{list-style:none;margin:2px 0 6px;padding:0 0 0 14px;border-left:1px solid var(--line)}
 .toc .sub-list a{font-size:.82rem;font-weight:500;padding:5px 10px}
@@ -345,17 +345,17 @@ h3{font-size:clamp(1.1rem,0.95rem + 0.7vw,1.3rem);line-height:1.3}
 .site-nav a{display:inline-block;padding:8px 12px;border-radius:var(--radius-sm);
   font-family:var(--font-mono);font-size:.82rem;font-weight:600;text-decoration:none;
   color:var(--color-ink);letter-spacing:.02em;white-space:nowrap}
-.site-nav a:hover{background:var(--color-accent-soft);color:var(--color-accent-ink)}
+.site-nav a:hover{background:transparent;color:var(--color-accent-ink);text-decoration:underline;text-underline-offset:3px}
 .site-nav a[aria-current="page"]{background:var(--color-ink);color:#fff}
 /* dark terminal top bars keep light links */
 .topbar .site-nav a{color:#f5f5f5}
-.topbar .site-nav a:hover{background:#262626;color:#fff}
+.topbar .site-nav a:hover{background:transparent;color:#fff;text-decoration:underline;text-underline-offset:3px}
 .topbar .site-nav a[aria-current="page"]{background:var(--color-accent);color:#fff}
 .site-nav-top{display:flex;align-items:center;gap:4px;padding:0 16px;min-height:48px;
   background:var(--color-term);border-bottom:2px solid var(--color-accent);
   overflow-x:auto;scrollbar-width:none}
 .site-nav-top a{color:#f5f5f5}
-.site-nav-top a:hover{background:#262626;color:#fff}
+.site-nav-top a:hover{background:transparent;color:#fff;text-decoration:underline;text-underline-offset:3px}
 .site-nav-top a[aria-current="page"]{background:var(--color-accent);color:#fff}
 .site-nav-top .site-brand{font-family:var(--font-mono);font-weight:700;color:#fff;margin-right:8px}
 /* ===== footer page navigation (added) ===== */
@@ -881,6 +881,7 @@ Selesai jika     : [mis. semua halaman rapi di HP, tombol WhatsApp berfungsi, su
     {id:'fase-3', title:'Fase 3 · Setup Project'},
     {id:'fase-4', title:'Fase 4 · Build'},
     {id:'fase-5', title:'Fase 5 · Testing & Debugging'},
+    {id:'troubleshooting', title:'Troubleshooting'},
     {id:'fase-6', title:'Fase 6 · Deploy'},
     {id:'fase-7', title:'Fase 7 · Maintenance'},
     {id:'prompt-bank', title:'Bank Prompt Serbaguna'},
@@ -932,40 +933,64 @@ Selesai jika     : [mis. semua halaman rapi di HP, tombol WhatsApp berfungsi, su
   }
   document.addEventListener('scroll', onScroll, {passive:true}); onScroll();
 
-  // Active chapter tracking
+  // Active chapter tracking — deterministic scroll-position scrollspy.
+  // (Replaces the old IntersectionObserver version, which cleared all
+  // active classes per intersecting entry: at chapter boundaries the
+  // switch lagged, and fast scrolling could skip collapsed phases.)
+  // Rule: the active chapter is the last one whose top is at or above
+  // the sticky-toolbar offset; at the very bottom, the last chapter.
+  // Exactly one TOC link is active at any time.
   var tocLinks = document.querySelectorAll('.toc a[data-toc]');
   var tocMap = {};
   tocLinks.forEach(function(a){ tocMap[a.getAttribute('href').slice(1)] = a; });
-  if('IntersectionObserver' in window){
-    var obs = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if(e.isIntersecting){
-          var id = e.target.id;
-          tocLinks.forEach(function(a){ a.classList.remove('active'); });
-          var link = tocMap[id];
-          if(link){
-            link.classList.add('active');
-            // keep the active TOC item visible inside the sidebar only
-            if(window.innerWidth >= 1024){
-              var tocEl = document.getElementById('toc');
-              var lt = link.offsetTop, lh = link.offsetHeight;
-              if(lt < tocEl.scrollTop + 8){ tocEl.scrollTop = lt - 12; }
-              else if(lt + lh > tocEl.scrollTop + tocEl.clientHeight - 8){ tocEl.scrollTop = lt - tocEl.clientHeight + lh + 12; }
-            }
-          }
-          for(var i = 0; i < chapters.length; i++){
-            if(chapters[i].id === id){
-              currentIdx = i; updateChapterNav();
-              var bm = document.getElementById('bookMark');
-              if(bm) bm.textContent = chapters[i].title;
-              break;
-            }
-          }
-        }
-      });
-    }, {rootMargin:'-15% 0px -70% 0px'});
-    chapters.forEach(function(c){ var el = document.getElementById(c.id); if(el) obs.observe(el); });
+  var chapterEls = chapters.map(function(c){ return document.getElementById(c.id); })
+    .filter(function(el){ return !!el; });
+  var SPY_OFFSET = 80; // sticky toolbar (~56px) + margin
+  function setActiveChapter(idx){
+    if(idx === currentIdx && tocMap[chapters[idx].id] &&
+       tocMap[chapters[idx].id].classList.contains('active')) return;
+    currentIdx = idx;
+    tocLinks.forEach(function(a){ a.classList.remove('active'); });
+    var link = tocMap[chapters[idx].id];
+    if(link){
+      link.classList.add('active');
+      // keep the active TOC item visible inside the sidebar only
+      if(window.innerWidth >= 1024){
+        var tocEl = document.getElementById('toc');
+        var lt = link.offsetTop, lh = link.offsetHeight;
+        if(lt < tocEl.scrollTop + 8){ tocEl.scrollTop = lt - 12; }
+        else if(lt + lh > tocEl.scrollTop + tocEl.clientHeight - 8){ tocEl.scrollTop = lt - tocEl.clientHeight + lh + 12; }
+      }
+    }
+    updateChapterNav();
+    var bm = document.getElementById('bookMark');
+    if(bm) bm.textContent = chapters[idx].title;
   }
+  function updateSpy(){
+    var h = document.documentElement;
+    var scrollY = window.scrollY || h.scrollTop;
+    if(scrollY + window.innerHeight >= h.scrollHeight - 2){
+      setActiveChapter(chapters.length - 1);
+      return;
+    }
+    var threshold = scrollY + SPY_OFFSET;
+    var idx = 0; // top of page: first chapter ("Pendahuluan") is active
+    for(var i = 0; i < chapterEls.length; i++){
+      var top = chapterEls[i].getBoundingClientRect().top + scrollY;
+      if(top <= threshold) idx = i; else break;
+    }
+    setActiveChapter(idx);
+  }
+  var spyTicking = false;
+  function requestSpy(){
+    if(spyTicking) return;
+    spyTicking = true;
+    requestAnimationFrame(function(){ spyTicking = false; updateSpy(); });
+  }
+  document.addEventListener('scroll', requestSpy, {passive:true});
+  window.addEventListener('resize', requestSpy);
+  window.addEventListener('hashchange', function(){ setTimeout(updateSpy, 60); });
+  updateSpy();
 })();
 </script>
 </body>
