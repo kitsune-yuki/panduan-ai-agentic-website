@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Panduan AI Agentic untuk pemula: membangun website dari nol sampai production, dengan contoh Website KPI Perpajakan. Workflow lengkap dan dokumen pendukung (PRD, ERD, dan lainnya).">
+<meta name="color-scheme" content="light dark">
+<title>Panduan AI Agentic: Website dari Nol sampai Production</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f4ee;
+    --paper: #fffdf8;
+    --ink: #23211d;
+    --muted: #5d5a54;
+    --line: #ddd5c6;
+    --accent: #8a5a1d;
+    --accent-soft: #f3e8d5;
+    --code-bg: #f1ece2;
+    --shadow: 0 1px 3px rgba(35, 33, 29, .12), 0 8px 24px rgba(35, 33, 29, .08);
+    --fs: 1.0625rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1a17;
+      --paper: #242220;
+      --ink: #f0ece4;
+      --muted: #b3aca0;
+      --line: #44403a;
+      --accent: #e0aa62;
+      --accent-soft: #3a3226;
+      --code-bg: #322e29;
+      --shadow: 0 1px 3px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .3);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: var(--fs);
+    line-height: 1.75;
+  }
+  a { color: var(--accent); }
+  a:hover { text-decoration-thickness: 2px; }
+  .book {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 0 1.25rem 3rem;
+  }
+  /* ——— Bilah atas ——— */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-inner {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: .6rem 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem .9rem;
+    align-items: center;
+    justify-content: space-between;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: .85rem;
+  }
+  .topbar-inner strong { font-size: .9rem; }
+  .topbar nav { display: flex; flex-wrap: wrap; gap: .1rem .9rem; }
+  .topbar nav a { text-decoration: none; }
+  .topbar nav a:hover { text-decoration: underline; }
+  /* ——— Hero ——— */
+  header.hero {
+    text-align: center;
+    padding: 3rem 0 2rem;
+    border-bottom: 3px double var(--line);
+    margin-bottom: 2rem;
+  }
+  .kicker {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: .8rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 1rem;
+  }
+  h1 {
+    font-size: clamp(1.7rem, 5.5vw, 2.5rem);
+    line-height: 1.25;
+    margin: 0 0 1rem;
+  }
+  .subtitle {
+    font-size: 1.1rem;
+    color: var(--muted);
+    max-width: 34rem;
+    margin: 0 auto 1.5rem;
+  }
+  .example {
+    display: inline-block;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: .9rem;
+    background: var(--accent-soft);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: .35rem .9rem;
+    margin: 0 0 1.5rem;
+  }
+  .cta { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
+  .btn {
+    display: inline-block;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: .95rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: .7rem 1.3rem;
+    border-radius: .6rem;
+    border: 1px solid var(--accent);
+  }
+  .btn-primary { background: var(--accent); color: #fffdf8; }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-ghost { color: var(--accent); background: transparent; }
+  .note {
+    font-size: .92rem;
+    color: var(--muted);
+    margin: 1.5rem auto 0;
+    max-width: 34rem;
+  }
+  /* ——— Bab / isi ——— */
+  main section { margin: 2.5rem 0; }
+  h2 {
+    font-size: 1.55rem;
+    line-height: 1.3;
+    margin: 0 0 .75rem;
+    padding-bottom: .45rem;
+    border-bottom: 2px solid var(--line);
+  }
+  h2 .bab {
+    display: block;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: .75rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .35rem;
+  }
+  h3 { font-size: 1.2rem; margin: 1.5rem 0 .4rem; }
+  p { margin: .6rem 0; }
+  .lead { font-size: 1.12rem; }
+  /* ——— Misi & langkah ——— */
+  ol.misi, ol.langkah {
+    margin: .5rem 0;
+    padding-left: 1.4rem;
+  }
+  ol.misi li, ol.langkah li { margin: .55rem 0; padding-left: .25rem; }
+  ol.misi li::marker, ol.langkah li::marker { color: var(--accent); font-weight: 700; }
+  /* ——— Daftar isi ——— */
+  .toc-part {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: .75rem;
+    box-shadow: var(--shadow);
+    padding: 1.1rem 1.25rem;
+    margin: 1.25rem 0;
+  }
+  .toc-part h3 { margin-top: 0; }
+  .toc-part ol { margin: .4rem 0 0; padding-left: 1.35rem; }
+  .toc-part li { margin: .45rem 0; }
+  .toc-part li a { text-decoration: none; }
+  .toc-part li a:hover { text-decoration: underline; }
+  .toc-part .toc-desc { color: var(--muted); font-size: .95rem; margin: 0; }
+  /* ——— Loop AI agentic ——— */
+  .loop {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .6rem;
+    margin: 1.25rem 0;
+    text-align: center;
+  }
+  .loop-step {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: .6rem;
+    padding: .9rem .5rem;
+  }
+  .loop-step strong {
+    display: block;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: .95rem;
+    color: var(--accent);
+  }
+  .loop-step span { font-size: .88rem; color: var(--muted); }
+  .loop-arrow {
+    display: none;
+    text-align: center;
+    color: var(--muted);
+    font-size: .85rem;
+    margin: .25rem 0;
+  }
+  /* ——— Kartu dokumen ——— */
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .85rem;
+    margin: 1.25rem 0;
+  }
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: .75rem;
+    box-shadow: var(--shadow);
+    padding: 1rem 1.1rem;
+  }
+  .card h4 { margin: 0 0 .3rem; font-size: 1.05rem; }
+  .card p { margin: 0 0 .6rem; font-size: .96rem; color: var(--muted); }
+  .card a {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: .88rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .card a:hover { text-decoration: underline; }
+  /* ——— Workflow singkat ——— */
+  ol.ringkas { padding-left: 1.35rem; }
+  ol.ringkas li { margin: .5rem 0; }
+  ol.ringkas li::marker { color: var(--accent); font-weight: 700; }
+  /* ——— Blockquote kata pengantar ——— */
+  blockquote {
+    margin: 1rem 0;
+    padding: .2rem 0 .2rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    font-style: italic;
+  }
+  blockquote p { margin: .5rem 0; }
+  /* ——— Footer ——— */
+  footer {
+    border-top: 3px double var(--line);
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    font-size: .92rem;
+    color: var(--muted);
+    text-align: center;
+  }
+  footer nav { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; justify-content: center; margin: .75rem 0; }
+  /* ——— Responsif ——— */
+  @media (max-width: 640px) {
+    body { font-size: 1rem; line-height: 1.7; }
+    .book { padding: 0 1rem 2.5rem; }
+    header.hero { padding: 2.25rem 0 1.5rem; }
+    .loop { grid-template-columns: 1fr; }
+    .loop-arrow { display: block; }
+    .cards { grid-template-columns: 1fr; }
+    .btn { width: 100%; text-align: center; }
+    .topbar-inner { justify-content: center; text-align: center; }
+  }
+  @media print {
+    .topbar, .cta { display: none; }
+    body { background: #fff; color: #000; }
+    .book { max-width: none; }
+    .toc-part, .card, .loop-step { box-shadow: none; break-inside: avoid; }
+    a { color: #000; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <strong>Panduan AI Agentic</strong>
+    <nav aria-label="Navigasi utama">
+      <a href="#visi">Visi</a>
+      <a href="#kata-pengantar">Kata Pengantar</a>
+      <a href="#daftar-isi">Daftar Isi</a>
+      <a href="workflow.html">Workflow</a>
+      <a href="dokumentasi.html">Dokumen</a>
+    </nav>
+  </div>
+</div>
+
+<div class="book">
+
+  <!-- 1. Hero -->
+  <header class="hero">
+    <p class="kicker">Buku panduan saku &middot; Bahasa Indonesia</p>
+    <h1>Panduan AI Agentic: Website dari Nol sampai Production</h1>
+    <p class="subtitle">Belajar pelan-pelan memakai AI agentic untuk membangun website sendiri — dari ide pertama sampai websitenya bisa dibuka siapa saja.</p>
+    <p class="example">Contoh proyek di sepanjang panduan ini: Website KPI Perpajakan</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="workflow.html">Mulai dari Workflow &rarr;</a>
+      <a class="btn btn-ghost" href="dokumentasi.html">Lihat Dokumen Pendukung</a>
+    </div>
+    <p class="note">Ini adalah panduan belajar, bukan jalan pintas. Tidak ada yang perlu dihafal sekaligus — cukup ikuti satu langkah kecil, lalu langkah berikutnya.</p>
+  </header>
+
+  <main>
+    <!-- 2. Visi -->
+    <section id="visi" aria-labelledby="visi-judul">
+      <h2 id="visi-judul"><span class="bab">Visi</span>Website pertama yang selesai, bukan sekadar dimulai</h2>
+      <p class="lead">Visi panduan ini sederhana: seorang pemula bisa membangun websitenya sendiri dengan bantuan AI agentic — pelan-pelan, langkah demi langkah, dan sungguh-sungguh paham apa yang sedang ia bangun, bukan sekadar menyalin jawaban AI.</p>
+      <p>Website yang selesai, walau sederhana, jauh lebih berharga daripada proyek besar yang berhenti di tengah jalan. Karena itu panduan ini menuntunmu sampai ke production: sampai websitemu punya alamat asli dan bisa dibuka orang lain.</p>
+    </section>
+
+    <!-- 3. Misi -->
+    <section id="misi" aria-labelledby="misi-judul">
+      <h2 id="misi-judul"><span class="bab">Misi</span>Empat hal yang kami pegang</h2>
+      <ol class="misi">
+        <li><strong>Belajar konsep dulu, baru praktik.</strong> Pahami dulu cara kerja AI agentic — apa yang bisa ia lakukan, apa yang tetap menjadi tugasmu — sebelum menulis satu baris kode pun.</li>
+        <li><strong>Kerja bertahap dengan checklist.</strong> Setiap fase dipecah menjadi tugas-tugas kecil yang bisa dicentang. Satu tugas selesai, baru lanjut ke tugas berikutnya.</li>
+        <li><strong>Dokumentasi sebelum kode.</strong> Tulis dulu apa yang mau dibangun (PRD, alur pengguna, ERD) supaya AI tidak menebak-nebak dan kamu tidak tersesat di tengah jalan.</li>
+        <li><strong>Deploy aman dan bisa dirawat.</strong> Website yang naik ke production harus bisa dicoba, diperbaiki, dan dikembangkan lagi — bukan sekadar tayang sekali lalu ditinggalkan.</li>
+      </ol>
+    </section>
+
+    <!-- 4. Kata Pengantar -->
+    <section id="kata-pengantar" aria-labelledby="pengantar-judul">
+      <h2 id="pengantar-judul"><span class="bab">Kata Pengantar</span>Untukmu yang memulai (lagi) dari hampir nol</h2>
+      <blockquote>
+        <p>Panduan ini ditulis untuk seseorang yang memulai dari hampir nol — yang pernah mencoba membuat website KPI, lalu proyek itu berhenti sebelum jadi. Kalau itu ceritamu, kamu tidak sendiri, dan itu bukan kegagalan. Itu artinya kamu sudah pernah memulai, dan sekarang kamu memulai lagi dengan bekal yang lebih baik.</p>
+        <p>Ikuti panduan ini perlahan, satu langkah kecil setiap kalinya. Tidak perlu menyelesaikan satu bab dalam sehari. Kalau mentok, berhenti, istirahat, lalu kembali lagi. Kalau AI memberi jawaban yang membingungkan, itu bukan salahmu — tanyakan lagi dengan kata-katamu sendiri, atau minta ia menjelaskan seperti kepada pemula.</p>
+        <p>Kesalahan adalah bagian dari belajar, bukan bukti bahwa kamu tidak bisa. Website pertamamu tidak harus sempurna. Ia hanya harus selesai — dan panduan ini ada untuk membantumu sampai ke sana.</p>
+      </blockquote>
+    </section>
+
+    <!-- 5. Daftar Isi -->
+    <section id="daftar-isi" aria-labelledby="daftar-isi-judul">
+      <h2 id="daftar-isi-judul"><span class="bab">Daftar Isi</span>Dua bagian, satu perjalanan</h2>
+      <p>Panduan ini terdiri dari dua bagian yang saling melengkapi. Bagian 1 adalah cara kerjanya — workflow dari nol sampai production. Bagian 2 adalah dokumen-dokumen yang membuat kerja itu rapi dan bisa diulang.</p>
+
+      <div class="toc-part">
+        <h3>Bagian 1 — Workflow AI Agentic</h3>
+        <p class="toc-desc">Delapan fase, dari persiapan sampai website dirawat setelah tayang. Baca selengkapnya di <a href="workflow.html">workflow.html</a>.</p>
+        <ol>
+          <li><a href="workflow.html#fase-0">Fase 0 — Persiapan — Siapkan alat &amp; akun</a></li>
+          <li><a href="workflow.html#fase-1">Fase 1 — Ide &amp; Perencanaan — Tulis brief sebelum kode</a></li>
+          <li><a href="workflow.html#fase-2">Fase 2 — Desain &amp; Struktur — Sketsa sebelum membangun</a></li>
+          <li><a href="workflow.html#fase-3">Fase 3 — Setup Project — Bangun pondasi yang rapi</a></li>
+          <li><a href="workflow.html#fase-4">Fase 4 — Build — Bangun fitur satu per satu bersama agent</a></li>
+          <li><a href="workflow.html#fase-5">Fase 5 — Testing &amp; Debugging — Buktikan, jangan berasumsi</a></li>
+          <li><a href="workflow.html#fase-6">Fase 6 — Deploy — Rilis ke production sampai bisa diakses publik</a></li>
+          <li><a href="workflow.html#fase-7">Fase 7 — Maintenance &amp; Iterasi — Website hidup, bukan proyek sekali jadi</a></li>
+        </ol>
+      </div>
+
+      <div class="toc-part">
+        <h3>Bagian 2 — Dokumen Pendukung</h3>
+        <p class="toc-desc">Empat belas dokumen untuk Website KPI Perpajakan — dari ide sampai catatan harian. Baca selengkapnya di <a href="dokumentasi.html">dokumentasi.html</a>.</p>
+        <ol>
+          <li><a href="dokumentasi.html#prd">PRD — Product Requirements Document</a></li>
+          <li><a href="dokumentasi.html#flow">User Flow — alur pengguna</a></li>
+          <li><a href="dokumentasi.html#erd">ERD — Entity Relationship Diagram</a></li>
+          <li><a href="dokumentasi.html#database">Skema Database — ERD yang bisa dieksekusi</a></li>
+          <li><a href="dokumentasi.html#api">Spesifikasi API — kontrak frontend &harr; backend</a></li>
+          <li><a href="dokumentasi.html#arsitektur">Arsitektur &amp; Tech Stack</a></li>
+          <li><a href="dokumentasi.html#agents">AGENTS.md — aturan main untuk AI agent di repo</a></li>
+          <li><a href="dokumentasi.html#rencana">Implementation Plan — rencana implementasi bertahap</a></li>
+          <li><a href="dokumentasi.html#roadmap">Roadmap — linimasa 6 minggu + maintenance</a></li>
+          <li><a href="dokumentasi.html#backlog">Product Backlog — daftar pekerjaan berdasarkan prioritas</a></li>
+          <li><a href="dokumentasi.html#testing">Rencana Testing &amp; UAT</a></li>
+          <li><a href="dokumentasi.html#deploy">Deploy — panduan menaikkan website ke production</a></li>
+          <li><a href="dokumentasi.html#devlog">Devlog — catatan harian pengembangan</a></li>
+          <li><a href="dokumentasi.html#glosarium">Glosarium singkat</a></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 6. Isi Utama ringkasan -->
+    <section id="isi-utama" aria-labelledby="isi-utama-judul">
+      <h2 id="isi-utama-judul"><span class="bab">Isi Utama</span>Ringkasan isi panduan</h2>
+
+      <h3 id="cara-kerja">(a) Cara kerja AI agentic</h3>
+      <p>AI agentic bukan sekadar chatbot yang menjawab pertanyaan. Ia adalah asisten yang bekerja dalam satu putaran berulang — dan kamulah yang memegang kendali di setiap putaran:</p>
+      <div class="loop" role="list" aria-label="Loop kerja AI agentic">
+        <div class="loop-step" role="listitem"><strong>1. Plan</strong><span>Merencanakan — apa yang mau dikerjakan, dan dalam urutan apa</span></div>
+        <p class="loop-arrow" aria-hidden="true">&darr;</p>
+        <div class="loop-step" role="listitem"><strong>2. Act</strong><span>Mengerjakan — agent menjalankan satu langkah kecil, misalnya menulis kode</span></div>
+        <p class="loop-arrow" aria-hidden="true">&darr;</p>
+        <div class="loop-step" role="listitem"><strong>3. Observe</strong><span>Mengamati — melihat hasilnya: apakah berhasil, apakah ada yang salah?</span></div>
+        <p class="loop-arrow" aria-hidden="true">&darr;</p>
+        <div class="loop-step" role="listitem"><strong>4. Iterate</strong><span>Memperbaiki — mengulang putaran dengan perbaikan, sampai hasilnya benar</span></div>
+      </div>
+      <p><strong>Plan &rarr; Act &rarr; Observe &rarr; Iterate.</strong> Tugasmu bukan menulis semua kode sendiri, melainkan memberi arahan yang jelas, memeriksa hasilnya, dan memutuskan kapan suatu langkah sudah cukup baik untuk dilanjutkan. Penjelasan lengkapnya ada di <a href="workflow.html#cara-kerja">Workflow: Pertama, pahami cara kerja AI agentic</a>.</p>
+
+      <h3 id="dokumen-pendukung">(b) Dokumen pendukung</h3>
+      <p>Enam dokumen ini adalah yang paling sering kamu buka saat membangun Website KPI Perpajakan:</p>
+      <div class="cards">
+        <article class="card">
+          <h4>PRD</h4>
+          <p>Menjelaskan website ini untuk siapa, fitur apa saja yang dibangun, dan bagaimana kita tahu ia sudah berhasil.</p>
+          <a href="dokumentasi.html#prd">Baca PRD &rarr;</a>
+        </article>
+        <article class="card">
+          <h4>ERD</h4>
+          <p>Gambar hubungan antar data — pegawai, target, realisasi, dan skor KPI — supaya database tidak dibangun asal-asalan.</p>
+          <a href="dokumentasi.html#erd">Baca ERD &rarr;</a>
+        </article>
+        <article class="card">
+          <h4>Implementation Plan</h4>
+          <p>Rencana implementasi bertahap dalam 7 fase, masing-masing dengan tanda selesainya, supaya kerja tidak melompat-lompat.</p>
+          <a href="dokumentasi.html#rencana">Baca Implementation Plan &rarr;</a>
+        </article>
+        <article class="card">
+          <h4>Backlog</h4>
+          <p>Daftar pekerjaan yang diurutkan berdasarkan prioritas, jadi kamu selalu tahu apa yang paling penting dikerjakan berikutnya.</p>
+          <a href="dokumentasi.html#backlog">Baca Backlog &rarr;</a>
+        </article>
+        <article class="card">
+          <h4>Deploy</h4>
+          <p>Panduan menaikkan website dari laptop ke production, lengkap dengan checklist sebelum tayang dan cara rollback bila gagal.</p>
+          <a href="dokumentasi.html#deploy">Baca Deploy &rarr;</a>
+        </article>
+        <article class="card">
+          <h4>Devlog</h4>
+          <p>Catatan harian pengembangan — apa yang dikerjakan, apa yang gagal, dan apa yang dipelajari — supaya agent tidak mengulang kesalahan yang sama.</p>
+          <a href="dokumentasi.html#devlog">Baca Devlog &rarr;</a>
+        </article>
+      </div>
+      <p>Delapan dokumen lainnya — User Flow, Skema Database + SQL, Spesifikasi API, Arsitektur &amp; Tech Stack, AGENTS.md, Roadmap, Rencana Testing &amp; UAT, dan Glosarium — ada di <a href="dokumentasi.html">dokumentasi.html</a>.</p>
+
+      <h3 id="workflow-singkat">(c) Workflow singkat</h3>
+      <p>Delapan fase dari nol sampai production, masing-masing satu baris:</p>
+      <ol class="ringkas">
+        <li><strong>Persiapan</strong> — siapkan alat dan akun, sekali saja, dipakai untuk semua proyek berikutnya.</li>
+        <li><strong>Ide &amp; Perencanaan</strong> — tulis brief sebelum kode, karena kode yang salah arah lahir dari brief yang kabur.</li>
+        <li><strong>Desain &amp; Struktur</strong> — sketsa halaman dan alurnya, supaya agent tidak menebak-nebak.</li>
+        <li><strong>Setup Project</strong> — bangun pondasi proyek yang rapi dan bisa jalan di laptopmu.</li>
+        <li><strong>Build</strong> — bangun fitur satu per satu bersama agent, kecil-kecil tapi selesai.</li>
+        <li><strong>Testing &amp; Debugging</strong> — buktikan sendiri, jangan percaya begitu saja pada kata agent.</li>
+        <li><strong>Deploy</strong> — rilis ke production sampai websitemu bisa dibuka siapa saja.</li>
+        <li><strong>Maintenance &amp; Iterasi</strong> — rawat dan perbaiki terus; website yang hidup tidak pernah benar-benar selesai.</li>
+      </ol>
+      <p>Versi lengkap setiap fase — lengkap dengan tugas, estimasi waktu, dan contoh prompt — ada di <a href="workflow.html">workflow.html</a>.</p>
+    </section>
+
+    <!-- 7. Cara Memakai Panduan Ini -->
+    <section id="cara-memakai" aria-labelledby="cara-memakai-judul">
+      <h2 id="cara-memakai-judul"><span class="bab">Cara Memakai</span>Cara memakai panduan ini</h2>
+      <ol class="langkah">
+        <li><strong>Baca kata pengantar dan visi di atas.</strong> Pahami dulu tujuan dan ritmenya: pelan, bertahap, dan tidak perlu terburu-buru.</li>
+        <li><strong>Ikuti workflow fase demi fase.</strong> Mulai dari <a href="workflow.html#fase-0">Fase 0 — Persiapan</a>, centang tugas yang selesai, dan jangan melompat ke fase berikutnya sebelum fase saat ini benar-benar jalan.</li>
+        <li><strong>Isi dokumen pendukung.</strong> Sebelum membangun fitur, lengkapi <a href="dokumentasi.html#prd">PRD</a> dan <a href="dokumentasi.html#erd">ERD</a>-nya; selama membangun, isi <a href="dokumentasi.html#backlog">Backlog</a> dan <a href="dokumentasi.html#devlog">Devlog</a>-nya.</li>
+        <li><strong>Deploy, lalu rawat.</strong> Naikkan websitemu ke production dengan panduan di <a href="dokumentasi.html#deploy">Deploy</a>, minta orang lain mencobanya, dan lanjutkan perbaikannya lewat <a href="workflow.html#fase-7">Fase 7 — Maintenance &amp; Iterasi</a>.</li>
+      </ol>
+    </section>
+  </main>
+
+  <!-- 8. Footer -->
+  <footer>
+    <p><strong>Panduan AI Agentic: Website dari Nol sampai Production</strong></p>
+    <p>Dibuat untuk belajar — contoh proyek: Website KPI Perpajakan. Ikuti pelan-pelan, satu langkah kecil setiap kalinya.</p>
+    <nav aria-label="Tautan panduan">
+      <a href="workflow.html">Workflow AI Agentic</a>
+      <a href="dokumentasi.html">Dokumen Pendukung</a>
+      <a href="https://github.com/kitsune-yuki/panduan-ai-agentic-website">Repositori GitHub</a>
+    </nav>
+    <p>Repositori: <a href="https://github.com/kitsune-yuki/panduan-ai-agentic-website">github.com/kitsune-yuki/panduan-ai-agentic-website</a><br>
+    Diterbitkan sebagai GitHub Pages: <a href="https://kitsune-yuki.github.io/panduan-ai-agentic-website/">kitsune-yuki.github.io/panduan-ai-agentic-website</a></p>
+    <p>&copy; 2026 Yumina / kitsune-yuki &middot; Lisensi MIT</p>
+  </footer>
+
+</div>
+</body>
+</html>

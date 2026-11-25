@@ -1,0 +1,1404 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>Dokumentasi Website: PRD dan ERD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e9edeb; --paper:#ffffff; --card:#ffffff; --card2:#f1f5f3; --text:#1b2422; --muted:#5b6d68;
+    --accent:#0f766e; --accent-ink:#0b5e57; --accent-soft:#e2efec;
+    --amber:#b45309; --amber-soft:#fdf3e0;
+    --border:#dde4e1; --border-strong:#c8d3cf;
+    --code-bg:#10201d; --code-text:#d7ece7;
+    --radius:8px;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#070c0b; --paper:#131c1a; --card:#131c1a; --card2:#1a2623; --text:#e8f1ee; --muted:#9db3ad;
+      --accent:#2dd4bf; --accent-ink:#5eead4; --accent-soft:#123b36;
+      --amber:#fbbf24; --amber-soft:#2e2410;
+      --border:#26352f; --border-strong:#33463f;
+      --code-bg:#0a1513; --code-text:#cdeae3;
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:72px}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important} }
+  body{margin:0;font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.65;font-size:16px}
+  button,[role="button"],summary,select{ min-height:2.5rem; }
+  a{color:var(--accent-ink)}
+  code{font-family:"JetBrains Mono",ui-monospace,monospace}
+
+  /* ---------- reading progress ---------- */
+  .progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:80;background:transparent}
+  .progress span{display:block;height:100%;width:0;background:var(--accent);transition:width .08s linear}
+
+  /* ---------- top bar ---------- */
+  .topbar{position:sticky;top:0;z-index:70;display:flex;align-items:center;gap:12px;height:52px;padding:0 16px;background:var(--paper);border-bottom:1px solid var(--border)}
+  .toc-toggle{display:inline-flex;align-items:center;gap:8px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-weight:700;font-size:13.5px;padding:7px 13px;cursor:pointer;min-height:38px}
+  .toc-toggle:hover{border-color:var(--accent)}
+  .topbar-title{font-weight:800;font-size:14.5px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topbar-title span{color:var(--muted);font-weight:600}
+  .topbar-pct{margin-left:auto;font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--muted);white-space:nowrap}
+  @media(min-width:1024px){ .toc-toggle{display:none} }
+  @media(max-width:560px){ .topbar-title span{display:none} }
+
+  /* ---------- layout: sidebar + book page ---------- */
+  .layout{display:flex;align-items:flex-start;max-width:1280px;margin:0 auto}
+  .sidebar{flex:0 0 268px;width:268px;position:sticky;top:52px;height:calc(100vh - 52px);height:calc(100dvh - 52px);overflow-y:auto;padding:26px 14px 44px 22px;scrollbar-width:thin}
+  .side-label{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 6px 10px}
+  .scrim{display:none}
+  .book{flex:1 1 auto;min-width:0;background:var(--paper);border:1px solid var(--border);border-radius:6px;margin:22px 22px 56px 6px;padding:52px clamp(20px,5.5vw,68px) 64px;font-size:17px;line-height:1.78;box-shadow:0 1px 2px rgba(16,32,29,.05),0 16px 40px -24px rgba(16,32,29,.25)}
+  @media (prefers-color-scheme: dark){ .book{box-shadow:0 1px 2px rgba(0,0,0,.4),0 16px 40px -24px rgba(0,0,0,.7)} }
+  @media(max-width:1023px){
+    .sidebar{position:fixed;top:0;left:0;z-index:90;height:100vh;height:100dvh;width:min(300px,84vw);background:var(--paper);border-right:1px solid var(--border);padding:20px 14px 40px 18px;transform:translateX(-102%);transition:transform .25s ease;box-shadow:0 0 60px rgba(0,0,0,.25)}
+    .sidebar.open{transform:translateX(0)}
+    .scrim{display:block;position:fixed;inset:0;z-index:85;background:rgba(8,15,13,.45);opacity:0;pointer-events:none;transition:opacity .25s ease}
+    .scrim.show{opacity:1;pointer-events:auto}
+    body.locked{overflow:hidden}
+    .book{margin:12px 10px 40px;padding:34px 18px 48px;font-size:16.5px}
+  }
+
+  /* ---------- table of contents (chapter list) ---------- */
+  nav.toc .row{display:flex;flex-direction:column;gap:2px}
+  nav.toc a{text-decoration:none;color:var(--text);font-size:14px;font-weight:600;padding:8px 12px;border-radius:7px;display:block;line-height:1.4;border-left:3px solid transparent}
+  nav.toc a:hover{background:var(--card2)}
+  nav.toc a.active{background:var(--accent-soft);color:var(--accent-ink);border-left-color:var(--accent)}
+
+  /* ---------- title page / hero ---------- */
+  header.hero{padding:6px 0 30px;border-bottom:3px double var(--border-strong);margin-bottom:6px}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink);background:var(--accent-soft);padding:6px 12px;border-radius:999px}
+  .kicker::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  h1{font-size:clamp(29px,4.6vw,42px);line-height:1.16;font-weight:800;letter-spacing:-.02em;margin:18px 0 14px}
+  h1 em{font-style:normal;color:var(--accent-ink)}
+  .lede{font-size:clamp(16.5px,2.2vw,18.5px);color:var(--muted);margin:0 0 22px}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+  .chip{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:8px 13px;font-size:13.5px;font-weight:600}
+  .chip b{color:var(--accent-ink)}
+  .callout{margin:24px 0 0;background:var(--amber-soft);border:1px solid var(--border);border-left:4px solid var(--amber);border-radius:6px;padding:14px 18px;font-size:15.5px;line-height:1.65}
+  .callout b{color:var(--amber)}
+
+  /* ---------- chapters ---------- */
+  section{padding-top:46px;scroll-margin-top:72px}
+  .sec-head{margin-bottom:10px}
+  .sec-num{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:12.5px;font-weight:600;color:var(--accent-ink);background:var(--accent-soft);border:1px solid var(--border);padding:3px 10px;border-radius:6px;margin-bottom:10px}
+  .sec-num::before{content:"Bab "}
+  h2{font-size:clamp(24px,3.4vw,31px);font-weight:800;letter-spacing:-.015em;margin:0 0 6px;line-height:1.22;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  .sec-sub{color:var(--muted);margin:10px 0 0}
+  h3{font-size:19.5px;font-weight:700;margin:30px 0 8px;letter-spacing:-.01em}
+  h4{font-size:16px;font-weight:700;margin:20px 0 6px}
+  p{margin:0 0 14px}
+  ul,ol{margin:0 0 16px;padding-left:24px}
+  li{margin-bottom:7px}
+  li::marker{color:var(--accent-ink);font-weight:700}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px}
+  .grid{display:grid;gap:14px}
+  .grid.c2,.grid.c3{grid-template-columns:1fr}
+  @media(min-width:680px){ .grid.c2{grid-template-columns:1fr 1fr} .grid.c3{grid-template-columns:1fr 1fr} }
+  .doc-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:17px 18px}
+  .doc-card .tag{font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:600;color:var(--accent-ink);background:var(--accent-soft);display:inline-block;padding:3px 9px;border-radius:6px;margin-bottom:10px}
+  .doc-card h3{margin:0 0 6px;font-size:16.5px}
+  .doc-card p{font-size:14.5px;color:var(--muted);margin:0 0 10px;line-height:1.6}
+  .doc-card .when{font-size:13px;font-weight:600}
+  .doc-card .when span{color:var(--muted);font-weight:500}
+  /* steps */
+  .steps{counter-reset:step;display:grid;gap:0}
+  .step{display:flex;gap:14px;padding:13px 0;border-bottom:1px dashed var(--border)}
+  .step:last-child{border-bottom:none}
+  .step .n{counter-increment:step;flex:0 0 auto;width:29px;height:29px;border-radius:50%;border:2px solid var(--accent);color:var(--accent-ink);font-weight:800;font-size:13.5px;display:flex;align-items:center;justify-content:center;margin-top:2px}
+  .step .n::before{content:counter(step)}
+  .step b{display:block;margin-bottom:2px}
+  .step p{margin:0;font-size:15px;color:var(--muted);line-height:1.65}
+  /* tables — markdown style, stacked cards on small screens */
+  .tbl{width:100%;border-collapse:collapse;font-size:15px;background:var(--card);margin:6px 0 18px}
+  .tbl th{text-align:left;background:var(--card2);font-weight:700;padding:10px 14px;border:1px solid var(--border);vertical-align:top}
+  .tbl td{padding:10px 14px;border:1px solid var(--border);vertical-align:top;line-height:1.6}
+  .tbl code{font-size:13px;background:var(--accent-soft);padding:1px 6px;border-radius:5px;white-space:nowrap}
+  @media(max-width:640px){
+    .tbl,.tbl tbody,.tbl tr,.tbl td{display:block;width:100%}
+    .tbl thead{display:none}
+    .tbl tr{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;padding:8px 0;background:var(--card)}
+    .tbl td{border:none;padding:5px 14px}
+    .tbl td::before{content:attr(data-l);display:block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:1px}
+  }
+  .badge{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:999px}
+  .b-get{background:#dcfce7;color:#166534}.b-post{background:#dbeafe;color:#1e40af}.b-put{background:#fef3c7;color:#92400e}.b-del{background:#fee2e2;color:#991b1b}
+  @media (prefers-color-scheme: dark){ .b-get{background:#14532d;color:#bbf7d0}.b-post{background:#1e3a5f;color:#bfdbfe}.b-put{background:#453208;color:#fde68a}.b-del{background:#4c1212;color:#fecaca} }
+  /* code / template — markdown fenced block */
+  .codebox{position:relative;background:var(--code-bg);border-radius:var(--radius);overflow:hidden;margin:14px 0 20px}
+  .codebox pre{margin:0;padding:18px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.65;color:var(--code-text);white-space:pre}
+  .copy-btn{position:absolute;top:10px;right:10px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-family:inherit;font-weight:700;font-size:13px;padding:8px 14px;cursor:pointer;min-height:36px}
+  @media (prefers-color-scheme: dark){ .copy-btn{color:#06231f} }
+  .copy-btn.done{background:var(--amber)}
+  details{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin:12px 0}
+  details summary{cursor:pointer;font-weight:700;padding:15px 20px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:52px;font-size:16px}
+  details summary::-webkit-details-marker{display:none}
+  details summary::after{content:"+";font-size:22px;color:var(--accent-ink);font-weight:800;flex:0 0 auto}
+  details[open ] summary::after{content:"–"}
+  details .body{padding:0 20px 18px}
+  details .body p,details .body li{font-size:15.5px}
+  /* ERD */
+  .erd-scroll{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px;overflow-x:auto}
+  .erd-scroll svg{width:100%;min-width:600px;height:auto;display:block}
+  .ent{cursor:pointer}
+  .ent rect.box{fill:var(--card2);stroke:var(--border);stroke-width:1.5}
+  .ent text{fill:var(--text);font-family:"Plus Jakarta Sans",sans-serif}
+  .ent .tname{font-weight:800;font-size:15px}
+  .ent .attr{font-size:11.5px;fill:var(--muted);font-family:"JetBrains Mono",monospace}
+  .ent.active rect.box{stroke:var(--accent);stroke-width:3}
+  .rel{stroke:var(--muted);stroke-width:1.6;fill:none}
+  .rel.active{stroke:var(--amber);stroke-width:3}
+  .rel-label{font-size:12px;font-weight:800;fill:var(--accent-ink);font-family:"JetBrains Mono",monospace}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:13.5px;color:var(--muted);margin-top:12px;line-height:1.55}
+  .legend b{color:var(--text)}
+  #erd-info{margin-top:14px;background:var(--accent-soft);border-radius:8px;padding:14px 18px;font-size:15px;min-height:56px;line-height:1.65}
+  /* checklist styled (non-interactive) */
+  .check{list-style:none;padding:0;margin:0}
+  .check li{position:relative;padding:9px 0 9px 36px;border-bottom:1px dashed var(--border);margin:0;font-size:15.5px}
+  .check li:last-child{border-bottom:none}
+  .check li::before{content:"";position:absolute;left:2px;top:13px;width:18px;height:18px;border:2px solid var(--accent);border-radius:5px}
+  .check li b{display:block}
+  .check li span{color:var(--muted);font-size:14.5px}
+  .flow{display:flex;flex-direction:column;gap:0;align-items:stretch;margin:8px 0 4px}
+  .flow .node{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;text-align:center;font-weight:600;font-size:15px}
+  .flow .node small{display:block;font-weight:500;color:var(--muted);font-size:13px}
+  .flow .node.decision{border-color:var(--amber);background:var(--amber-soft)}
+  .flow .arrow{text-align:center;color:var(--accent-ink);font-size:18px;line-height:1;padding:5px 0;font-weight:800}
+  @media(min-width:860px){
+    .flow{flex-direction:row;align-items:center;flex-wrap:wrap}
+    .flow .node{flex:1 1 128px}
+    .flow .arrow{transform:rotate(-90deg);flex:0 0 26px}
+  }
+  .arch{display:grid;gap:12px}
+  @media(min-width:680px){ .arch{grid-template-columns:repeat(3,1fr)} }
+  .arch .layer{background:var(--card);border:1px solid var(--border);border-top:4px solid var(--accent);border-radius:var(--radius);padding:16px}
+  .arch .layer h3{margin:0 0 6px;font-size:16px}
+  .arch .layer p{font-size:14.5px;color:var(--muted);margin:0;line-height:1.6}
+  .gloss{display:grid;gap:0;margin:0}
+  .gloss div{display:grid;gap:2px;padding:12px 0;border-bottom:1px dashed var(--border)}
+  .gloss div:last-child{border-bottom:none}
+  @media(min-width:640px){ .gloss div{grid-template-columns:180px 1fr;gap:16px} }
+  .gloss dt{font-weight:800;font-family:"JetBrains Mono",monospace;font-size:14px;color:var(--accent-ink)}
+  .gloss dd{margin:0;color:var(--muted);font-size:15px}
+  footer{margin-top:52px;padding-top:22px;border-top:3px double var(--border-strong);color:var(--muted);font-size:15px}
+  .mini{font-size:14px;color:var(--muted);line-height:1.65}
+  strong.k{color:var(--accent-ink)}
+  /* priority & status badges */
+  .prio{display:inline-block;font-size:11.5px;font-weight:800;padding:2px 10px;border-radius:999px}
+  .p0{background:#fee2e2;color:#991b1b}.p1{background:#fef3c7;color:#92400e}.p2{background:#e5e7eb;color:#374151}
+  @media (prefers-color-scheme: dark){ .p0{background:#4c1212;color:#fecaca}.p1{background:#453208;color:#fde68a}.p2{background:#2b3440;color:#d1d5db} }
+  .st{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:6px;background:var(--accent-soft);color:var(--accent-ink);white-space:nowrap}
+  .dod{background:var(--amber-soft);border-radius:8px;padding:12px 16px;margin-top:12px;font-size:15px}
+  .dod b{color:var(--amber)}
+  .dod ul{margin:6px 0 0}
+  /* roadmap */
+  .road{display:grid;gap:14px;margin-top:18px}
+  @media(min-width:680px){ .road{grid-template-columns:1fr 1fr} }
+  .road .wk{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;position:relative}
+  .road .wk .w{display:inline-block;background:var(--accent);color:#fff;font-weight:800;font-size:12px;letter-spacing:.04em;padding:4px 11px;border-radius:999px;margin-bottom:10px}
+  @media (prefers-color-scheme: dark){ .road .wk .w{color:#06231f} }
+  .road .wk h3{margin:0 0 6px;font-size:16.5px}
+  .road .wk p{font-size:14.5px;color:var(--muted);margin:0 0 10px;line-height:1.6}
+  .road .ms{border-top:1px dashed var(--border);padding-top:10px;font-size:13.5px}
+  .road .ms b{color:var(--accent-ink)}
+  /* devlog */
+  .devlog-entry{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px}
+  .devlog-entry h3{margin:0 0 4px;font-size:17px}
+  .devlog-entry .date{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--accent-ink);font-weight:600}
+  .devlog-entry dl{display:grid;gap:8px;margin:12px 0 0}
+  .devlog-entry dl div{display:grid;gap:1px}
+  @media(min-width:640px){ .devlog-entry dl div{grid-template-columns:150px 1fr;gap:14px} }
+  .devlog-entry dt{font-weight:700;font-size:14px}
+  .devlog-entry dd{margin:0;font-size:15px;color:var(--muted)}
+  /* chapter prev / next */
+  .pagenav{display:flex;justify-content:space-between;gap:12px;margin-top:40px;padding-top:22px;border-top:1px solid var(--border)}
+  .pagenav .pg{flex:1 1 0;max-width:48%;text-decoration:none;color:var(--text);border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px;background:var(--card);display:block}
+  .pagenav .pg:hover{border-color:var(--accent)}
+  .pagenav .pg small{display:block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .pagenav .pg b{font-size:15.5px;color:var(--accent-ink);line-height:1.35;display:block}
+  .pagenav .pg.next{text-align:right;margin-left:auto}
+  .pagenav span{flex:1 1 0;max-width:48%}
+  @media(max-width:560px){ .pagenav .pg b{font-size:14px} }
+  /* print: just the book page */
+  @media print{
+    .topbar,.sidebar,.progress,.scrim,.pagenav,.toc-toggle{display:none!important}
+    body{background:#fff}
+    .book{border:none;box-shadow:none;margin:0;padding:0}
+  }
+</style>
+</head>
+<body>
+<div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+<header class="topbar">
+  <button class="toc-toggle" id="toc-toggle" aria-label="Buka daftar isi" aria-expanded="false" aria-controls="sidebar">&#9776; <span>Daftar Isi</span></button>
+  <div class="topbar-title">Dokumentasi Website <span>&middot; PRD, ERD &amp; dokumen pendamping</span></div>
+  <div class="topbar-pct" id="read-pct">0% terbaca</div>
+</header>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <p class="side-label">Daftar Isi &middot; 16 Bab</p>
+  <nav class="toc" aria-label="Daftar isi">
+  <div class="row">
+    <a href="#peta">Peta Dokumen</a>
+    <a href="#prd">1 · PRD</a>
+    <a href="#flow">2 · User Flow</a>
+    <a href="#erd">3 · ERD</a>
+    <a href="#database">4 · Skema Database</a>
+    <a href="#api">5 · Spesifikasi API</a>
+    <a href="#arsitektur">6 · Arsitektur</a>
+    <a href="#agents">7 · AGENTS.md</a>
+    <a href="#rencana">8 · Rencana Implementasi</a>
+    <a href="#roadmap">9 · Roadmap</a>
+    <a href="#backlog">10 · Backlog</a>
+    <a href="#testing">11 · Testing &amp; UAT</a>
+    <a href="#deploy">12 · Deploy</a>
+    <a href="#devlog">13 · Devlog</a>
+    <a href="#prompt">Prompt AI</a>
+    <a href="#glosarium">Glosarium</a>
+  </div>
+</nav>
+</aside>
+<div class="scrim" id="scrim"></div>
+<main class="book">
+
+<header class="hero">
+  <span class="kicker">Paket Dokumentasi Website</span>
+  <h1>Dari ide jadi website: <em>PRD, ERD,</em> dan dokumen pendampingnya</h1>
+  <p class="lede">Panduan lengkap berbahasa Indonesia untuk merencanakan website sebelum mulai ngoding — atau sebelum menyuruh AI ngoding. Semua contoh di halaman ini memakai satu studi kasus yang sama: <strong>website KPI perpajakan</strong> (penilaian kinerja tim pajak perusahaan), supaya setiap dokumen terasa nyambung satu sama lain.</p>
+  <div class="hero-meta">
+    <span class="chip"><b>14 dokumen</b> &nbsp;dalam satu paket</span>
+    <span class="chip">Studi kasus: <b>Website KPI Perpajakan</b></span>
+    <span class="chip">Level: <b>pemula, dari nol</b></span>
+    <span class="chip">Template <b>siap salin</b></span>
+  </div>
+  <div class="callout"><b>Kenapa dokumen dulu, baru kode?</b> Website yang “nggak pernah jadi” biasanya gagal bukan karena kodenya susah, tapi karena tujuannya berubah-ubah di tengah jalan. PRD mengunci <i>mau bikin apa</i>, ERD mengunci <i>datanya seperti apa</i>. Dua kunci itu membuat proses ngoding — sendiri maupun dibantu AI — jauh lebih lurus.</div>
+</header>
+
+
+
+<!-- ================= PETA ================= -->
+<section id="peta">
+  <div class="sec-head"><div class="sec-num">✦</div><div>
+    <h2>Peta dokumen: apa saja yang dibutuhkan?</h2>
+    <p class="sec-sub">Tidak semua proyek butuh semua dokumen. Untuk website skala kecil–menengah, empat belas dokumen ini adalah paket yang sehat — sembilan dokumen perencanaan &amp; teknis, ditambah AGENTS.md, rencana implementasi, roadmap, backlog, dan devlog untuk menjalankan proyeknya. Urutannya dari atas ke bawah = urutan pengerjaannya.</p>
+  </div></div>
+
+  <div class="grid c3" style="margin-top:18px">
+    <div class="doc-card"><span class="tag">01 · WAJIB</span><h3>PRD</h3><p>Product Requirements Document — tujuan produk, siapa penggunanya, fitur apa saja, dan batasannya. Dokumen induk yang dirujuk semua dokumen lain.</p><p class="when">Dibuat: <span>paling awal, sebelum desain &amp; kode</span></p></div>
+    <div class="doc-card"><span class="tag">02 · WAJIB</span><h3>User Flow</h3><p>Alur langkah pengguna dari masuk sampai tujuannya tercapai. Menemukan langkah yang membingungkan sebelum terlanjur dibuat.</p><p class="when">Dibuat: <span>setelah PRD, sebelum wireframe</span></p></div>
+    <div class="doc-card"><span class="tag">03 · WAJIB</span><h3>ERD</h3><p>Entity Relationship Diagram — peta data: tabel apa saja yang ada, isinya apa, dan bagaimana mereka saling berhubungan.</p><p class="when">Dibuat: <span>setelah fitur di PRD jelas</span></p></div>
+    <div class="doc-card"><span class="tag">04 · WAJIB</span><h3>Skema Database</h3><p>Turunan ERD yang teknis: nama tabel, kolom, tipe data, kunci, dan aturan unik. Inilah yang dieksekusi jadi database sungguhan.</p><p class="when">Dibuat: <span>langsung dari ERD</span></p></div>
+    <div class="doc-card"><span class="tag">05 · PERLU</span><h3>Spesifikasi API</h3><p>Daftar endpoint yang disediakan backend: alamatnya, data yang dikirim, dan data yang dikembalikan. Kontrak antara frontend dan backend.</p><p class="when">Dibuat: <span>setelah skema database</span></p></div>
+    <div class="doc-card"><span class="tag">06 · PERLU</span><h3>Arsitektur &amp; Tech Stack</h3><p>Teknologi yang dipakai dan alasan memilihnya, plus gambar besar cara komponen saling terhubung.</p><p class="when">Dibuat: <span>sebelum mulai ngoding</span></p></div>
+    <div class="doc-card"><span class="tag">07 · PERLU</span><h3>Wireframe</h3><p>Sketsa kasar tampilan tiap halaman: elemen apa di posisi mana, tanpa warna dan detail. Murah diubah, mahal kalau sudah jadi kode.</p><p class="when">Dibuat: <span>setelah user flow</span></p></div>
+    <div class="doc-card"><span class="tag">08 · WAJIB</span><h3>Rencana Testing &amp; UAT</h3><p>Skenario pengujian: fitur diuji dengan cara apa dan hasil benarnya seperti apa. UAT = pengguna asli mencoba dan menyatakan “ini sesuai kebutuhan”.</p><p class="when">Dibuat: <span>selama development, dijalankan sebelum rilis</span></p></div>
+    <div class="doc-card"><span class="tag">09 · WAJIB</span><h3>Checklist Deployment</h3><p>Langkah menaikkan website ke production: domain, hosting, variabel rahasia, backup, sampai pengecekan setelah tayang.</p><p class="when">Dibuat: <span>menjelang rilis</span></p></div>
+    <div class="doc-card"><span class="tag">10 · WAJIB*</span><h3>AGENTS.md</h3><p>File aturan main untuk AI agent di dalam repo: perannya, perintah yang boleh dan dilarang, struktur folder, cara menjalankan &amp; menguji proyek. *Wajib bila bekerja dengan AI agentic.</p><p class="when">Dibuat: <span>saat repo dibuat, sebelum agent menulis kode</span></p></div>
+    <div class="doc-card"><span class="tag">11 · WAJIB</span><h3>Implementation Plan</h3><p>Rencana implementasi bertahap per fase/minggu: tujuan, daftar tugas, dan Definition of Done tiap fase. Penerjemah PRD menjadi pekerjaan nyata.</p><p class="when">Dibuat: <span>setelah PRD, ERD &amp; arsitektur selesai</span></p></div>
+    <div class="doc-card"><span class="tag">12 · PERLU</span><h3>Roadmap</h3><p>Linimasa visual 4–6 minggu dari setup sampai production dan maintenance, dengan milestone yang bisa dicek tiap minggu.</p><p class="when">Dibuat: <span>bersamaan dengan implementation plan</span></p></div>
+    <div class="doc-card"><span class="tag">13 · WAJIB</span><h3>Product Backlog</h3><p>Daftar semua user story / fitur yang diurutkan prioritas (P0/P1/P2), lengkap dengan estimasi dan status. Sumber tunggal “apa yang dikerjakan berikutnya”.</p><p class="when">Dibuat: <span>dari user story di PRD, diperbarui tiap minggu</span></p></div>
+    <div class="doc-card"><span class="tag">14 · PERLU</span><h3>Devlog</h3><p>Development log — catatan harian/mingguan pengembangan: yang dikerjakan, keputusan, kendala, dan langkah berikutnya. Ingatan proyek yang tidak hilang antar sesi.</p><p class="when">Dibuat: <span>diisi setiap hari kerja, sejak hari pertama</span></p></div>
+  </div>
+
+  <h3>Urutan kerja dari nol sampai tayang</h3>
+  <div class="card">
+    <div class="steps">
+      <div class="step"><div class="n"></div><div><b>Tulis PRD</b><p>Jawab: masalah apa, untuk siapa, fitur versi pertama (MVP) apa saja. Batasi dengan tega — fitur “nanti saja” tulis di daftar terpisah.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Gambar user flow &amp; wireframe</b><p>Telusuri perjalanan pengguna di atas kertas. Kalau alurnya saja sudah ribet, tampilannya pasti ribet.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Rancang ERD, lalu skema database</b><p>Tentukan entitas dari kata benda di PRD: pengguna, departemen, KPI, target, realisasi, penilaian.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Susun spesifikasi API &amp; pilih tech stack</b><p>Endpoint mengikuti kebutuhan halaman. Stack pilih yang paling dikuasai / paling mudah dibantu AI.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Development per fitur</b><p>Kerjakan satu fitur vertikal sampai jalan (halaman + API + database), baru pindah. Jangan buat semua halaman dulu baru menyambungkannya.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Testing &amp; UAT</b><p>Jalankan skenario uji, lalu minta calon pengguna asli mencoba. Catat bug sebagai daftar, perbaiki berdasarkan prioritas.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Deploy ke production</b><p>Ikuti checklist deployment, cek ulang di alamat asli, dan siapkan cara kembali ke versi sebelumnya (rollback) bila ada masalah.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRD ================= -->
+<section id="prd">
+  <div class="sec-head"><div class="sec-num">1</div><div>
+    <h2>PRD — Product Requirements Document</h2>
+    <p class="sec-sub">Dokumen yang menjawab <strong class="k">apa yang dibangun dan kenapa</strong>, bukan bagaimana cara ngodingnya. Kalau di tengah proyek muncul keraguan “fitur ini perlu nggak ya?”, jawabannya dicari di PRD.</p>
+  </div></div>
+
+  <h3>Struktur PRD yang baik</h3>
+  <table class="tbl">
+    <thead><tr><th style="width:26%">Bagian</th><th>Isi &amp; pertanyaan yang harus terjawab</th></tr></thead>
+    <tbody>
+      <tr><td data-l="Bagian"><b>Latar belakang &amp; masalah</b></td><td data-l="Isi">Masalah apa yang terjadi sekarang? Contoh: penilaian KPI masih pakai spreadsheet terpisah-pisah, rekap akhir bulan memakan 3 hari.</td></tr>
+      <tr><td data-l="Bagian"><b>Tujuan &amp; ukuran sukses</b></td><td data-l="Isi">Hasil terukur yang ingin dicapai. Contoh: rekap KPI bulanan selesai &lt; 1 hari; 100% karyawan mengisi realisasi lewat website.</td></tr>
+      <tr><td data-l="Bagian"><b>Target pengguna &amp; peran</b></td><td data-l="Isi">Siapa saja yang memakai, dan peran (role) masing-masing: Admin HR, Manajer, Karyawan. Tiap peran beda hak aksesnya.</td></tr>
+      <tr><td data-l="Bagian"><b>Ruang lingkup (scope)</b></td><td data-l="Isi">Fitur yang <i>masuk</i> versi ini dan yang secara eksplisit <i>tidak masuk</i>. Bagian “tidak masuk” sama pentingnya — itu rem proyek.</td></tr>
+      <tr><td data-l="Bagian"><b>User story</b></td><td data-l="Isi">Kebutuhan ditulis dari sudut pengguna: “Sebagai manajer, saya ingin menyetujui realisasi KPI tim saya, supaya penilaian bisa lanjut.”</td></tr>
+      <tr><td data-l="Bagian"><b>Kebutuhan fungsional</b></td><td data-l="Isi">Daftar kemampuan sistem, diberi nomor (FR-01, FR-02, …) supaya mudah dirujuk saat testing: “FR-03 — Sistem menghitung skor akhir dari bobot × capaian.”</td></tr>
+      <tr><td data-l="Bagian"><b>Kebutuhan non-fungsional</b></td><td data-l="Isi">Kualitas di luar fitur: halaman terbuka &lt; 3 detik, hanya pengguna login yang bisa akses, data ter-backup harian.</td></tr>
+      <tr><td data-l="Bagian"><b>Asumsi &amp; risiko</b></td><td data-l="Isi">Hal yang dianggap benar (semua karyawan punya email kantor) dan hal yang bisa menggagalkan (format KPI tiap departemen berbeda).</td></tr>
+      <tr><td data-l="Bagian"><b>Linimasa kasar</b></td><td data-l="Isi">Tahapan dan target tanggalnya. Kasar tidak apa-apa — fungsinya kompas, bukan kontrak.</td></tr>
+    </tbody>
+  </table>
+
+  <details>
+    <summary>Lihat contoh PRD terisi — Website KPI Karyawan (ringkas)</summary>
+    <div class="body">
+      <h4>1. Latar belakang</h4>
+      <p>Penilaian KPI tim perpajakan saat ini memakai spreadsheet yang dikirim lewat email. HR merekap manual setiap akhir bulan (±3 hari kerja), versi file sering tertukar, dan anggota tim pajak tidak bisa melihat progresnya sendiri. Contoh KPI yang dinilai: persentase SPT Masa dilaporkan tepat waktu, ketepatan penerbitan e-Faktur, jumlah koreksi fiskal yang ditemukan, dan ketepatan rekonsiliasi pajak bulanan.</p>
+      <h4>2. Tujuan</h4>
+      <ul><li>Rekap KPI bulanan selesai dalam &lt; 1 hari kerja.</li><li>Karyawan bisa melihat target, realisasi, dan skornya kapan saja.</li><li>Tidak ada lagi file versi tertukar: satu sumber data di website.</li></ul>
+      <h4>3. Pengguna &amp; peran</h4>
+      <ul><li><b>Admin HR</b> — mengelola pengguna, departemen, dan daftar KPI.</li><li><b>Manajer</b> — menetapkan target tim, meninjau &amp; menyetujui realisasi, memberi penilaian.</li><li><b>Karyawan</b> — melihat targetnya, mengisi realisasi + bukti, melihat skor akhir.</li></ul>
+      <h4>4. Ruang lingkup</h4>
+      <p><b>Masuk (MVP):</b> login, kelola pengguna &amp; departemen, kelola KPI &amp; target per periode, input realisasi, persetujuan manajer, perhitungan skor otomatis, dashboard ringkasan, ekspor rekap ke Excel.</p>
+      <p><b>Tidak masuk (nanti):</b> integrasi payroll, notifikasi WhatsApp, aplikasi mobile, KPI antar-perusahaan.</p>
+      <h4>5. Contoh user story</h4>
+      <ul><li>Sebagai karyawan, saya ingin mengisi realisasi KPI saya beserta bukti, supaya manajer bisa meninjaunya tanpa saya kirim file terpisah.</li><li>Sebagai manajer, saya ingin menyetujui atau mengembalikan realisasi dengan catatan, supaya karyawan tahu apa yang harus diperbaiki.</li><li>Sebagai Admin HR, saya ingin mengekspor rekap semua departemen, supaya laporan ke manajemen siap tanpa rekap manual.</li></ul>
+      <h4>6. Kebutuhan fungsional (inti)</h4>
+      <ul><li>FR-01 — Pengguna login dengan email kantor &amp; kata sandi; sesi berakhir setelah 8 jam.</li><li>FR-02 — Admin HR dapat menambah/mengubah/menonaktifkan pengguna dan departemen.</li><li>FR-03 — Manajer menetapkan target tiap KPI per periode untuk anggota timnya.</li><li>FR-04 — Karyawan mengisi realisasi dan tautan bukti; status berubah menjadi “Menunggu Tinjauan”.</li><li>FR-05 — Manajer menyetujui atau mengembalikan realisasi dengan komentar wajib saat mengembalikan.</li><li>FR-06 — Sistem menghitung capaian = realisasi ÷ target × 100%, dan skor = Σ (capaian × bobot).</li><li>FR-07 — Dashboard menampilkan skor per karyawan dan rata-rata per departemen.</li></ul>
+      <h4>7. Non-fungsional</h4>
+      <ul><li>Halaman utama terbuka &lt; 3 detik di koneksi kantor.</li><li>Kata sandi tersimpan dalam bentuk hash, bukan teks asli.</li><li>Backup database otomatis setiap hari, tersimpan 30 hari.</li></ul>
+    </div>
+  </details>
+
+  <h3>Template PRD kosong — salin dan isi</h3>
+  <p class="mini">Tekan tombol <b>Salin template</b>, tempel ke dokumen / catatan / chat AI, lalu isi bagian di dalam kurung siku.</p>
+  <div class="codebox">
+    <button class="copy-btn" data-copy="tpl-prd">Salin template</button>
+<pre id="tpl-prd"># PRD — [Nama Website]
+Versi: 0.1 | Tanggal: [tgl] | Penulis: [nama]
+
+## 1. Latar Belakang &amp; Masalah
+[Masalah apa yang terjadi sekarang? Siapa yang merasakan? Akibatnya apa?]
+
+## 2. Tujuan &amp; Ukuran Sukses
+- [Hasil terukur 1, contoh: rekap selesai &lt; 1 hari]
+- [Hasil terukur 2]
+
+## 3. Target Pengguna &amp; Peran
+| Peran | Siapa | Hak utama |
+|---|---|---|
+| [Admin] | [...] | [...] |
+| [Pengguna] | [...] | [...] |
+
+## 4. Ruang Lingkup
+MASUK (MVP): [fitur versi pertama, batasi sedikit tapi utuh]
+TIDAK MASUK: [fitur yang sengaja ditunda — tulis eksplisit]
+
+## 5. User Story
+- Sebagai [peran], saya ingin [aksi], supaya [manfaat].
+
+## 6. Kebutuhan Fungsional
+- FR-01 — [sistem harus bisa ...]
+- FR-02 — [...]
+
+## 7. Kebutuhan Non-Fungsional
+- Performa: [...]
+- Keamanan: [...]
+- Backup: [...]
+
+## 8. Asumsi &amp; Risiko
+- Asumsi: [...]
+- Risiko: [...] → antisipasi: [...]
+
+## 9. Linimasa Kasar
+- [Minggu 1–2: ...] [Minggu 3–4: ...]</pre>
+  </div>
+</section>
+
+<!-- ================= USER FLOW ================= -->
+<section id="flow">
+  <div class="sec-head"><div class="sec-num">2</div><div>
+    <h2>User Flow — alur pengguna</h2>
+    <p class="sec-sub">Satu diagram untuk satu tujuan pengguna. Di bawah ini alur terpenting website KPI: <strong class="k">karyawan mengisi realisasi sampai disetujui manajer</strong>. Kotak kuning = titik keputusan.</p>
+  </div></div>
+
+  <div class="flow" role="img" aria-label="Alur: login, buka dashboard, pilih KPI, isi realisasi dan bukti, kirim, manajer meninjau, jika ditolak kembali ke pengisian dengan komentar, jika disetujui skor dihitung dan tampil di dashboard">
+    <div class="node">Login<small>email kantor &amp; kata sandi</small></div><div class="arrow">↓</div>
+    <div class="node">Dashboard<small>daftar KPI &amp; target periode ini</small></div><div class="arrow">↓</div>
+    <div class="node">Isi Realisasi<small>nilai capaian + tautan bukti</small></div><div class="arrow">↓</div>
+    <div class="node">Kirim<small>status: Menunggu Tinjauan</small></div><div class="arrow">↓</div>
+    <div class="node decision">Manajer meninjau<small>Setujui atau kembalikan?</small></div><div class="arrow">↓</div>
+    <div class="node">Skor dihitung<small>capaian × bobot, tampil di dashboard</small></div>
+  </div>
+  <p class="mini" style="margin-top:12px">Cabang penolakan: bila manajer mengembalikan, realisasi kembali ke karyawan <b>dengan komentar wajib</b> (FR-05) dan status menjadi “Perlu Revisi” — karyawan memperbaiki lalu mengirim ulang. Gambar cabang seperti ini untuk setiap titik keputusan; alur yang tidak punya jalan pulang biasanya adalah sumber kebuntuan pengguna.</p>
+
+  <div class="grid c2">
+    <div class="card"><h3 style="margin-top:0">Cara membuat user flow</h3>
+      <div class="steps">
+        <div class="step"><div class="n"></div><div><b>Mulai dari tujuan, bukan halaman</b><p>“Mengisi realisasi”, bukan “membuka halaman form”. Satu flow = satu tujuan.</p></div></div>
+        <div class="step"><div class="n"></div><div><b>Tulis langkah sebagai kata kerja</b><p>Login → pilih KPI → isi nilai → unggah bukti → kirim.</p></div></div>
+        <div class="step"><div class="n"></div><div><b>Tandai setiap keputusan</b><p>“Data valid?”, “Disetujui?” — tiap keputusan punya minimal dua jalan keluar.</p></div></div>
+        <div class="step"><div class="n"></div><div><b>Uji dengan skenario gagal</b><p>Salah kata sandi, bukti kosong, manajer menolak. Jalan gagalnya jelas atau tidak?</p></div></div>
+      </div>
+    </div>
+    <div class="card"><h3 style="margin-top:0">Alat menggambar (gratis)</h3>
+      <ul>
+        <li><b>draw.io / diagrams.net</b> — diagram umum &amp; ERD, ekspor PNG/SVG.</li>
+        <li><b>FigJam / Miro (free tier)</b> — flow &amp; wireframe kolaboratif.</li>
+        <li><b>dbdiagram.io</b> — ERD dari teks, cepat untuk pemula.</li>
+        <li><b>Kertas / papan tulis</b> — tetap sah untuk draf pertama; foto hasilnya.</li>
+      </ul>
+      <p class="mini">Tips: minta AI membuatkan draf flow dari user story di PRD, lalu perbaiki manual. AI bagus untuk draf pertama, keputusan akhir tetap manusia.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ERD ================= -->
+<section id="erd">
+  <div class="sec-head"><div class="sec-num">3</div><div>
+    <h2>ERD — Entity Relationship Diagram</h2>
+    <p class="sec-sub">Peta data website: <strong class="k">entitas</strong> (calon tabel), <strong class="k">atribut</strong> (calon kolom), dan <strong class="k">relasi</strong> antar-entitas. Klik nama entitas pada diagram untuk menyorot relasinya dan membaca penjelasannya.</p>
+  </div></div>
+
+  <div class="erd-scroll">
+    <svg viewBox="0 0 920 600" role="img" aria-label="Diagram ERD website KPI: departments, users, kpis, kpi_targets, kpi_actuals, reviews">
+      <!-- relations -->
+      <line class="rel" data-rel="departments users" x1="200" y1="95" x2="330" y2="95"/>
+      <text class="rel-label" x="238" y="86">1 — N</text>
+      <line class="rel" data-rel="departments kpis" x1="105" y1="150" x2="105" y2="255"/>
+      <text class="rel-label" x="112" y="208">1 — N</text>
+      <line class="rel" data-rel="kpis kpi_targets" x1="200" y1="330" x2="330" y2="330"/>
+      <text class="rel-label" x="238" y="321">1 — N</text>
+      <line class="rel" data-rel="kpis kpi_actuals" x1="105" y1="385" x2="105" y2="470"/>
+      <text class="rel-label" x="112" y="432">1 — N</text>
+      <line class="rel" data-rel="users kpi_actuals" x1="520" y1="150" x2="640" y2="470"/>
+      <text class="rel-label" x="600" y="300">1 — N</text>
+      <line class="rel" data-rel="kpi_actuals reviews" x1="200" y1="520" x2="330" y2="520"/>
+      <text class="rel-label" x="238" y="511">1 — N</text>
+      <polyline class="rel" data-rel="users reviews" points="532,120 916,120 916,522 532,522"/>
+      <text class="rel-label" x="700" y="110">1 — N</text>
+
+      <!-- departments -->
+      <g class="ent" role="button" aria-label="Lihat relasi entitas departments" data-ent="departments" tabindex="0">
+        <rect class="box" x="10" y="30" width="190" height="120" rx="10"/>
+        <text class="tname" x="24" y="56">departments</text>
+        <text class="attr" x="24" y="80">id · PK</text>
+        <text class="attr" x="24" y="100">name</text>
+        <text class="attr" x="24" y="120">manager_id · FK→users</text>
+      </g>
+      <!-- users -->
+      <g class="ent" role="button" aria-label="Lihat relasi entitas users" data-ent="users" tabindex="0">
+        <rect class="box" x="330" y="20" width="200" height="130" rx="10"/>
+        <text class="tname" x="344" y="46">users</text>
+        <text class="attr" x="344" y="70">id · PK</text>
+        <text class="attr" x="344" y="90">name, email (unik)</text>
+        <text class="attr" x="344" y="110">password_hash</text>
+        <text class="attr" x="344" y="130">role, department_id · FK</text>
+      </g>
+      <!-- kpis -->
+      <g class="ent" role="button" aria-label="Lihat relasi entitas kpis" data-ent="kpis" tabindex="0">
+        <rect class="box" x="10" y="255" width="190" height="130" rx="10"/>
+        <text class="tname" x="24" y="281">kpis</text>
+        <text class="attr" x="24" y="305">id · PK</text>
+        <text class="attr" x="24" y="325">name, description</text>
+        <text class="attr" x="24" y="345">unit, weight (bobot)</text>
+        <text class="attr" x="24" y="365">department_id · FK</text>
+      </g>
+      <!-- kpi_targets -->
+      <g class="ent" role="button" aria-label="Lihat relasi entitas kpi_targets" data-ent="kpi_targets" tabindex="0">
+        <rect class="box" x="330" y="265" width="200" height="130" rx="10"/>
+        <text class="tname" x="344" y="291">kpi_targets</text>
+        <text class="attr" x="344" y="315">id · PK</text>
+        <text class="attr" x="344" y="335">kpi_id · FK, user_id · FK</text>
+        <text class="attr" x="344" y="355">period (2026-11)</text>
+        <text class="attr" x="344" y="375">target_value</text>
+      </g>
+      <!-- kpi_actuals -->
+      <g class="ent" role="button" aria-label="Lihat relasi entitas kpi_actuals" data-ent="kpi_actuals" tabindex="0">
+        <rect class="box" x="10" y="470" width="190" height="120" rx="10"/>
+        <text class="tname" x="24" y="496">kpi_actuals</text>
+        <text class="attr" x="24" y="520">id · PK</text>
+        <text class="attr" x="24" y="540">kpi_id · FK, user_id · FK</text>
+        <text class="attr" x="24" y="560">period, actual_value</text>
+        <text class="attr" x="24" y="580">evidence_url, status</text>
+      </g>
+      <!-- reviews -->
+      <g class="ent" role="button" aria-label="Lihat relasi entitas reviews" data-ent="reviews" tabindex="0">
+        <rect class="box" x="330" y="455" width="200" height="135" rx="10"/>
+        <text class="tname" x="344" y="481">reviews</text>
+        <text class="attr" x="344" y="505">id · PK</text>
+        <text class="attr" x="344" y="525">actual_id · FK</text>
+        <text class="attr" x="344" y="545">reviewer_id · FK→users</text>
+        <text class="attr" x="344" y="565">decision, comment</text>
+        <text class="attr" x="344" y="585">reviewed_at</text>
+      </g>
+      <!-- score note -->
+      <g class="ent" role="button" aria-label="Lihat relasi entitas scores" data-ent="scores" tabindex="0">
+        <rect class="box" x="660" y="255" width="240" height="110" rx="10"/>
+        <text class="tname" x="674" y="281">scores (dihitung)</text>
+        <text class="attr" x="674" y="305">bukan tabel — dihitung dari</text>
+        <text class="attr" x="674" y="325">kpi_targets × kpi_actuals:</text>
+        <text class="attr" x="674" y="345">capaian = realisasi ÷ target</text>
+        <text class="attr" x="674" y="365">skor = Σ capaian × bobot</text>
+      </g>
+    </svg>
+    <div class="legend">
+      <span><b>PK</b> = Primary Key, identitas unik baris</span>
+      <span><b>FK</b> = Foreign Key, penunjuk ke tabel lain</span>
+      <span><b>1 — N</b> = satu ke banyak (one-to-many)</span>
+      <span><b>N — N</b> = banyak ke banyak → butuh tabel perantara</span>
+    </div>
+    <div id="erd-info">Klik sebuah entitas untuk melihat penjelasan &amp; relasinya. Contoh: <b>users</b> terhubung ke departments, kpi_actuals, dan reviews.</div>
+  </div>
+
+  <h3>Cara membaca &amp; merancang ERD</h3>
+  <div class="grid c2">
+    <div class="card">
+      <div class="steps">
+        <div class="step"><div class="n"></div><div><b>Ambil kata benda dari PRD</b><p>Pengguna, departemen, KPI, target, realisasi, penilaian → kandidat entitas.</p></div></div>
+        <div class="step"><div class="n"></div><div><b>Tentukan atribut tiap entitas</b><p>Data apa yang perlu disimpan tentangnya? Beri tiap entitas <code>id</code> sebagai PK.</p></div></div>
+        <div class="step"><div class="n"></div><div><b>Hubungkan dengan kata kerja</b><p>“Satu departemen memiliki banyak pengguna” → relasi 1—N, FK <code>department_id</code> ditaruh di users.</p></div></div>
+        <div class="step"><div class="n"></div><div><b>Periksa N—N &amp; data turunan</b><p>Relasi banyak-ke-banyak selalu dipecah dengan tabel perantara. Data hasil hitungan (skor) umumnya <i>tidak</i> disimpan — dihitung saat dibutuhkan, supaya tidak basi.</p></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Daftar relasi pada diagram</h3>
+      <ul>
+        <li><b>departments 1—N users</b> — satu departemen, banyak karyawan.</li>
+        <li><b>departments 1—N kpis</b> — KPI dimiliki per departemen.</li>
+        <li><b>kpis 1—N kpi_targets</b> — satu KPI punya target di banyak periode &amp; orang.</li>
+        <li><b>kpis 1—N kpi_actuals</b> — satu KPI diisi realisasinya tiap periode.</li>
+        <li><b>users 1—N kpi_actuals</b> — karyawan mengisi banyak realisasi.</li>
+        <li><b>kpi_actuals 1—N reviews</b> — satu realisasi bisa ditinjau berkali-kali (riwayat revisi tersimpan).</li>
+        <li><b>users 1—N reviews</b> — manajer (juga seorang user) menulis banyak tinjauan.</li>
+      </ul>
+      <p class="mini">Perhatikan: <code>kpi_targets</code> dan <code>kpi_actuals</code> sama-sama menunjuk ke <code>kpis</code> dan <code>users</code> — pola ini yang membuat skor bisa dihitung per orang, per KPI, per periode.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DATABASE ================= -->
+<section id="database">
+  <div class="sec-head"><div class="sec-num">4</div><div>
+    <h2>Skema Database — ERD yang bisa dieksekusi</h2>
+    <p class="sec-sub">ERD diterjemahkan menjadi definisi tabel yang presisi: tipe data, batasan unik, dan relasi. Di bawah ini kamus data inti website KPI dan contoh SQL-nya.</p>
+  </div></div>
+
+  <table class="tbl">
+    <thead><tr><th>Tabel · Kolom</th><th>Tipe</th><th>Aturan</th></tr></thead>
+    <tbody>
+      <tr><td data-l="Kolom"><code>users.id</code></td><td data-l="Tipe">BIGINT</td><td data-l="Aturan">PK, auto-increment</td></tr>
+      <tr><td data-l="Kolom"><code>users.email</code></td><td data-l="Tipe">VARCHAR(255)</td><td data-l="Aturan">UNIQUE, NOT NULL — satu email satu akun</td></tr>
+      <tr><td data-l="Kolom"><code>users.password_hash</code></td><td data-l="Tipe">VARCHAR(255)</td><td data-l="Aturan">NOT NULL — hash saja, tidak pernah teks asli</td></tr>
+      <tr><td data-l="Kolom"><code>users.role</code></td><td data-l="Tipe">ENUM</td><td data-l="Aturan"><code>admin</code> · <code>manager</code> · <code>employee</code></td></tr>
+      <tr><td data-l="Kolom"><code>users.department_id</code></td><td data-l="Tipe">BIGINT</td><td data-l="Aturan">FK → departments.id</td></tr>
+      <tr><td data-l="Kolom"><code>kpis.weight</code></td><td data-l="Tipe">DECIMAL(5,2)</td><td data-l="Aturan">Bobot persen; total bobot per departemen = 100</td></tr>
+      <tr><td data-l="Kolom"><code>kpi_targets.period</code></td><td data-l="Tipe">CHAR(7)</td><td data-l="Aturan">Format <code>YYYY-MM</code>; UNIQUE gabungan (kpi_id, user_id, period)</td></tr>
+      <tr><td data-l="Kolom"><code>kpi_actuals.status</code></td><td data-l="Tipe">ENUM</td><td data-l="Aturan"><code>draft</code> · <code>submitted</code> · <code>approved</code> · <code>revision</code></td></tr>
+      <tr><td data-l="Kolom"><code>reviews.decision</code></td><td data-l="Tipe">ENUM</td><td data-l="Aturan"><code>approved</code> · <code>revision</code>; comment wajib bila revision</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Contoh SQL (PostgreSQL / MySQL mirip)</h3>
+  <div class="codebox">
+    <button class="copy-btn" data-copy="tpl-sql">Salin SQL</button>
+<pre id="tpl-sql">CREATE TABLE departments (
+  id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name        VARCHAR(100) NOT NULL,
+  manager_id  BIGINT NULL
+);
+
+CREATE TABLE users (
+  id            BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name          VARCHAR(100) NOT NULL,
+  email         VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role          ENUM('admin','manager','employee') NOT NULL,
+  department_id BIGINT NULL,
+  FOREIGN KEY (department_id) REFERENCES departments(id)
+);
+
+CREATE TABLE kpis (
+  id            BIGINT PRIMARY KEY AUTO_INCREMENT,
+  department_id BIGINT NOT NULL,
+  name          VARCHAR(150) NOT NULL,
+  description   TEXT,
+  unit          VARCHAR(30),
+  weight        DECIMAL(5,2) NOT NULL DEFAULT 0,
+  FOREIGN KEY (department_id) REFERENCES departments(id)
+);
+
+CREATE TABLE kpi_targets (
+  id           BIGINT PRIMARY KEY AUTO_INCREMENT,
+  kpi_id       BIGINT NOT NULL,
+  user_id      BIGINT NOT NULL,
+  period       CHAR(7) NOT NULL,          -- '2026-11'
+  target_value DECIMAL(14,2) NOT NULL,
+  UNIQUE (kpi_id, user_id, period),
+  FOREIGN KEY (kpi_id)  REFERENCES kpis(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE kpi_actuals (
+  id           BIGINT PRIMARY KEY AUTO_INCREMENT,
+  kpi_id       BIGINT NOT NULL,
+  user_id      BIGINT NOT NULL,
+  period       CHAR(7) NOT NULL,
+  actual_value DECIMAL(14,2) NOT NULL,
+  evidence_url VARCHAR(500),
+  status       ENUM('draft','submitted','approved','revision')
+               NOT NULL DEFAULT 'draft',
+  UNIQUE (kpi_id, user_id, period),
+  FOREIGN KEY (kpi_id)  REFERENCES kpis(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE reviews (
+  id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+  actual_id   BIGINT NOT NULL,
+  reviewer_id BIGINT NOT NULL,
+  decision    ENUM('approved','revision') NOT NULL,
+  comment     TEXT,
+  reviewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (actual_id)   REFERENCES kpi_actuals(id),
+  FOREIGN KEY (reviewer_id) REFERENCES users(id)
+);</pre>
+  </div>
+  <p class="mini">Aturan emas skema: setiap tabel punya <b>PK</b>, setiap relasi diwujudkan sebagai <b>FK</b>, data yang tidak boleh dobel dilindungi <b>UNIQUE</b>, dan status memakai daftar nilai tetap (<b>ENUM</b>) — bukan teks bebas yang rawan salah ketik.</p>
+</section>
+
+<!-- ================= API ================= -->
+<section id="api">
+  <div class="sec-head"><div class="sec-num">5</div><div>
+    <h2>Spesifikasi API — kontrak frontend ↔ backend</h2>
+    <p class="sec-sub">Setiap baris adalah satu kemampuan yang disediakan backend. Frontend tidak perlu tahu isi database; backend tidak perlu tahu tampilan. Kontrak ini yang membuat keduanya bisa dikerjakan paralel — juga oleh AI.</p>
+  </div></div>
+
+  <table class="tbl">
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Fungsi</th><th>Siapa</th></tr></thead>
+    <tbody>
+      <tr><td data-l="Method"><span class="badge b-post">POST</span></td><td data-l="Endpoint"><code>/api/auth/login</code></td><td data-l="Fungsi">Login, mengembalikan token sesi</td><td data-l="Siapa">Semua</td></tr>
+      <tr><td data-l="Method"><span class="badge b-get">GET</span></td><td data-l="Endpoint"><code>/api/me/dashboard</code></td><td data-l="Fungsi">KPI, target, realisasi &amp; skor milik pengguna yang login</td><td data-l="Siapa">Karyawan</td></tr>
+      <tr><td data-l="Method"><span class="badge b-get">GET</span></td><td data-l="Endpoint"><code>/api/kpis?department_id=</code></td><td data-l="Fungsi">Daftar KPI per departemen</td><td data-l="Siapa">Semua peran</td></tr>
+      <tr><td data-l="Method"><span class="badge b-post">POST</span></td><td data-l="Endpoint"><code>/api/targets</code></td><td data-l="Fungsi">Menetapkan target KPI untuk seorang karyawan &amp; periode</td><td data-l="Siapa">Manajer</td></tr>
+      <tr><td data-l="Method"><span class="badge b-put">PUT</span></td><td data-l="Endpoint"><code>/api/actuals/:id</code></td><td data-l="Fungsi">Mengisi / memperbarui realisasi &amp; bukti</td><td data-l="Siapa">Karyawan</td></tr>
+      <tr><td data-l="Method"><span class="badge b-post">POST</span></td><td data-l="Endpoint"><code>/api/actuals/:id/submit</code></td><td data-l="Fungsi">Mengirim realisasi untuk ditinjau (status → submitted)</td><td data-l="Siapa">Karyawan</td></tr>
+      <tr><td data-l="Method"><span class="badge b-post">POST</span></td><td data-l="Endpoint"><code>/api/actuals/:id/review</code></td><td data-l="Fungsi">Menyetujui / mengembalikan dengan komentar</td><td data-l="Siapa">Manajer</td></tr>
+      <tr><td data-l="Method"><span class="badge b-get">GET</span></td><td data-l="Endpoint"><code>/api/reports/summary?period=</code></td><td data-l="Fungsi">Rekap skor per karyawan &amp; departemen + ekspor Excel</td><td data-l="Siapa">Admin HR, Manajer</td></tr>
+      <tr><td data-l="Method"><span class="badge b-del">DELETE</span></td><td data-l="Endpoint"><code>/api/users/:id</code></td><td data-l="Fungsi">Menonaktifkan pengguna (soft delete, data lama tetap aman)</td><td data-l="Siapa">Admin HR</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Contoh pasangan request–response</h3>
+  <div class="codebox">
+    <button class="copy-btn" data-copy="tpl-api">Salin contoh</button>
+<pre id="tpl-api">POST /api/actuals/42/review
+Authorization: Bearer &lt;token&gt;
+Content-Type: application/json
+
+{ "decision": "revision",
+  "comment": "Bukti bulan ini belum dilampirkan, mohon dilengkapi." }
+
+→ 200 OK
+{ "id": 42, "status": "revision",
+  "review": { "reviewer": "Sari (Manajer)", "decision": "revision",
+              "comment": "Bukti bulan ini belum dilampirkan…" } }
+
+Kode status yang dipakai konsisten:
+201 dibuat · 400 data tidak valid · 401 belum login
+403 tidak berhak · 404 tidak ditemukan · 422 aturan bisnis dilanggar</pre>
+  </div>
+</section>
+
+<!-- ================= ARSITEKTUR ================= -->
+<section id="arsitektur">
+  <div class="sec-head"><div class="sec-num">6</div><div>
+    <h2>Arsitektur &amp; Tech Stack</h2>
+    <p class="sec-sub">Untuk pemula, arsitektur terbaik adalah yang paling sederhana tapi tetap rapi: satu aplikasi web, satu database. Jangan mulai dengan microservices.</p>
+  </div></div>
+
+  <div class="arch">
+    <div class="layer"><h3>Frontend — yang dilihat pengguna</h3><p>Halaman &amp; form di browser. Pilihan ramah pemula: <b>Next.js</b> (React) atau <b>Laravel Blade</b>. Tugasnya hanya menampilkan dan mengirim data lewat API.</p></div>
+    <div class="layer"><h3>Backend — otak &amp; penjaga aturan</h3><p>Mengurus login, hak akses, perhitungan skor, dan validasi. Satu bahasa dengan frontend bila memungkinkan: Next.js API Routes, atau Laravel bila memilih PHP.</p></div>
+    <div class="layer"><h3>Database — tempat data tinggal</h3><p><b>PostgreSQL</b> atau <b>MySQL</b>. Struktur mengikuti skema di bagian 4 persis. File bukti disimpan di storage (mis. folder uploads / S3), database hanya menyimpan URL-nya.</p></div>
+  </div>
+
+  <div class="grid c2" style="margin-top:14px">
+    <div class="card"><h3 style="margin-top:0">Rekomendasi stack pemula</h3>
+      <ul>
+        <li><b>Opsi A (JavaScript satu bahasa):</b> Next.js + PostgreSQL + Prisma, deploy di Vercel + database Neon/Supabase.</li>
+        <li><b>Opsi B (PHP klasik, banyak tutorial Indonesia):</b> Laravel + MySQL, deploy di shared hosting / VPS.</li>
+        <li><b>Kode &amp; versi:</b> Git + GitHub sejak hari pertama — setiap perubahan tercatat dan bisa di-rollback.</li>
+      </ul>
+    </div>
+    <div class="card"><h3 style="margin-top:0">Dokumen arsitektur cukup berisi</h3>
+      <ul>
+        <li>Diagram 3 lapis seperti di atas (satu gambar).</li>
+        <li>Tabel pilihan teknologi + <i>alasan satu kalimat</i> tiap pilihan.</li>
+        <li>Daftar variabel rahasia (environment): <code>DATABASE_URL</code>, <code>JWT_SECRET</code> — nilainya tidak pernah ditulis di dokumen / kode.</li>
+        <li>Di mana website di-hosting dan siapa yang memegang aksesnya.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= AGENTS.MD ================= -->
+<section id="agents">
+  <div class="sec-head"><div class="sec-num">7</div><div>
+    <h2>AGENTS.md — aturan main untuk AI agent di repo</h2>
+    <p class="sec-sub">File teks bernama <strong class="k">AGENTS.md</strong> yang ditaruh di folder utama (root) repo. Hampir semua alat AI agentic membacanya otomatis di awal sesi, jadi file ini adalah cara “memberi pengarahan sekali, berlaku selamanya”: siapa agent-nya, apa yang boleh dan tidak boleh ia lakukan, dan bagaimana cara menjalankan proyek ini.</p>
+  </div></div>
+
+  <div class="grid c2">
+    <div class="card"><h3 style="margin-top:0">Kenapa perlu AGENTS.md?</h3>
+      <ul>
+        <li><b>Konteks tidak perlu diulang</b> — stack, struktur folder, dan perintah penting tertulis sekali; agent tidak menebak-nebak setiap sesi baru.</li>
+        <li><b>Batasan jadi eksplisit</b> — perintah berbahaya (hapus database, push langsung ke main, commit kata sandi) dilarang tertulis, bukan sekadar diharapkan.</li>
+        <li><b>Hasil lebih konsisten</b> — gaya kode, pola penamaan, dan Definition of Done yang sama dipakai di semua sesi.</li>
+        <li><b>Pasangan devlog</b> — AGENTS.md berisi aturan tetap; devlog berisi riwayat. Agent membaca keduanya sebelum mulai.</li>
+      </ul>
+    </div>
+    <div class="card"><h3 style="margin-top:0">Cara memakai</h3>
+      <div class="steps">
+        <div class="step"><div class="n"></div><div><b>Salin template di bawah</b><p>Simpan persis dengan nama <code>AGENTS.md</code> di root repo, sejajar dengan README.</p></div></div>
+        <div class="step"><div class="n"></div><div><b>Sesuaikan isinya</b><p>Ganti stack, perintah, dan nama folder bila proyekmu berbeda dari contoh.</p></div></div>
+        <div class="step"><div class="n"></div><div><b>Commit ke Git</b><p>File ini bagian dari proyek — ikut ter-versioning seperti kode.</p></div></div>
+        <div class="step"><div class="n"></div><div><b>Perbarui saat aturan berubah</b><p>Agent melanggar aturan yang belum tertulis? Tulis aturannya di sini, bukan hanya menegur di chat.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Template AGENTS.md lengkap — salin utuh ke repo</h3>
+  <div class="codebox">
+    <button class="copy-btn" data-copy="tpl-agents">Salin AGENTS.md</button>
+<pre id="tpl-agents"># AGENTS.md — Website KPI Perpajakan
+
+File ini dibaca AI agent sebelum bekerja di repo ini.
+Patuhi seluruh isinya. Bila ada instruksi di chat yang bertentangan
+dengan file ini, tanyakan dulu ke pemilik proyek sebelum melanjutkan.
+
+## 1. Tentang Proyek
+Website internal untuk penilaian KPI tim perpajakan perusahaan.
+Sumber kebenaran kebutuhan: docs/PRD.md
+Sumber kebenaran data: docs/ERD.md dan skema di folder prisma/
+Jangan menambah fitur di luar PRD tanpa persetujuan pemilik proyek.
+
+Stack:
+- Next.js (App Router) + TypeScript
+- PostgreSQL + Prisma ORM
+- Deploy: Vercel (aplikasi) + Neon (database)
+
+## 2. Peran Agent
+Kamu adalah developer pendamping, bukan pengambil keputusan.
+Tugasmu: mengimplementasikan backlog satu item dalam satu waktu,
+menulis test untuk perubahanmu, dan mencatat kemajuan di devlog.
+Keputusan produk (fitur, prioritas, perubahan skema) selalu
+dikembalikan ke pemilik proyek.
+
+## 3. Cara Kerja (wajib, setiap sesi)
+1. Baca file ini, lalu docs/PRD.md, docs/ERD.md, dan entri
+   devlog terakhir di docs/devlog.md.
+2. Ambil SATU item backlog berprioritas tertinggi yang belum selesai.
+3. Buat rencana singkat (plan) dan tunjukkan ke pemilik proyek
+   sebelum menulis kode untuk perubahan besar.
+4. Kerjakan satu fitur secara vertikal: halaman + API + database.
+5. Jalankan test dan lint. Perbaiki sampai hijau sebelum selesai.
+6. Tulis entri devlog: yang dikerjakan, keputusan, kendala,
+   langkah berikutnya.
+7. Commit dengan pesan jelas, contoh: "feat(actuals): form input
+   realisasi KPI + validasi bukti"
+
+## 4. Perintah yang BOLEH dijalankan
+- npm install            (menambah dependensi yang diperlukan)
+- npm run dev            (menjalankan lokal di localhost:3000)
+- npm run build          (memastikan proyek bisa dibangun)
+- npm test               (menjalankan test)
+- npm run lint           (memeriksa gaya kode)
+- npx prisma migrate dev --name [nama-perubahan]
+- git status, git diff, git add, git commit
+
+## 5. Perintah &amp; Tindakan yang DILARANG
+- JANGAN hapus file/folder massal (rm -rf) atau database
+  (DROP DATABASE, prisma migrate reset) tanpa izin tertulis.
+- JANGAN push langsung ke branch main; gunakan branch fitur
+  dan pull request.
+- JANGAN commit file .env, kata sandi, token, atau kunci rahasia
+  dalam bentuk apa pun.
+- JANGAN mengubah skema database tanpa file migrasi.
+- JANGAN mengubah file di luar cakupan item backlog yang
+  sedang dikerjakan.
+- JANGAN menonaktifkan / menghapus test supaya build lolos.
+- JANGAN deploy ke production; deploy hanya oleh pemilik proyek.
+
+## 6. Struktur Folder
+/                  root proyek (file ini di sini)
+/src/app           halaman &amp; route API (App Router)
+/src/components    komponen UI yang dipakai ulang
+/src/lib           helper: auth, perhitungan skor, validasi
+/prisma            schema.prisma &amp; file migrasi database
+/docs              PRD.md, ERD.md, devlog.md, backlog
+/public            aset statis (logo, ikon)
+
+## 7. Menjalankan Proyek
+Prasyarat: Node.js 20+, PostgreSQL berjalan (atau Neon).
+1. Salin .env.example menjadi .env, isi DATABASE_URL &amp; JWT_SECRET.
+2. npm install
+3. npx prisma migrate dev
+4. npm run dev  → buka http://localhost:3000
+
+## 8. Build, Test, Deploy
+- Build lokal : npm run build  (harus sukses sebelum pull request)
+- Test        : npm test       (semua test lama &amp; baru harus lolos)
+- Deploy      : dilakukan pemilik proyek dari branch main
+                (Vercel otomatis). Agent cukup memastikan build
+                dan test hijau di pull request.
+
+## 9. Aturan Kode
+- Skor KPI TIDAK disimpan di database; selalu dihitung dari
+  kpi_targets x kpi_actuals (lihat ERD).
+- Semua endpoint wajib memeriksa login &amp; peran (role) di server,
+  bukan hanya menyembunyikan tombol di frontend.
+- Kata sandi selalu hash (bcrypt); tidak pernah teks asli.
+- Nama tabel &amp; kolom mengikuti ERD persis: snake_case, bahasa
+  Inggris (users, kpi_actuals, reviews).
+
+## 10. Definition of Done (per item backlog)
+- Fitur jalan sesuai user story &amp; kriteria di PRD (FR terkait).
+- Test untuk fitur itu ada dan lolos; build hijau.
+- Tidak ada rahasia ter-commit; tidak ada file di luar cakupan.
+- Devlog diperbarui dan status backlog diubah.</pre>
+  </div>
+  <p class="mini">Sesuaikan bagian stack &amp; perintah bila memakai Opsi B (Laravel): perintahnya menjadi <code>php artisan serve</code>, <code>php artisan test</code>, dan <code>php artisan migrate</code> — struktur file-nya tetap sama.</p>
+</section>
+
+<!-- ================= RENCANA IMPLEMENTASI ================= -->
+<section id="rencana">
+  <div class="sec-head"><div class="sec-num">8</div><div>
+    <h2>Implementation Plan — rencana implementasi bertahap</h2>
+    <p class="sec-sub">Penerjemah PRD menjadi pekerjaan nyata. Proyek dipecah menjadi <strong class="k">7 fase mengikuti 6 minggu</strong> pada roadmap. Setiap fase punya tujuan, daftar tugas, dan <strong class="k">Definition of Done (DoD)</strong> — syarat objektif untuk boleh lanjut ke fase berikutnya. Klik tiap fase untuk membuka rinciannya.</p>
+  </div></div>
+
+  <details open>
+    <summary>Fase 0 — Persiapan &amp; Dokumen · Minggu 1 (awal)</summary>
+    <div class="body">
+      <p><b>Tujuan:</b> semua keputusan penting terkunci di dokumen sebelum kode ditulis.</p>
+      <ul><li>Finalisasi PRD (bagian 1) dan ERD (bagian 3); contoh KPI perpajakan disepakati bersama lead tim pajak.</li><li>Pilih stack (bagian 6) dan buat repo Git + GitHub.</li><li>Pasang <code>AGENTS.md</code> (bagian 7) dan susun backlog awal (bagian 10).</li><li>Siapkan folder <code>docs/</code> berisi PRD, ERD, dan devlog.</li></ul>
+      <div class="dod"><b>Definition of Done:</b><ul><li>PRD &amp; ERD dinyatakan “cukup” oleh pemilik proyek.</li><li>Repo bisa di-clone dan berisi AGENTS.md + docs.</li><li>Backlog P0 sudah tertulis lengkap.</li></ul></div>
+    </div>
+  </details>
+  <details>
+    <summary>Fase 1 — Fondasi: Database &amp; Login · Minggu 1–2</summary>
+    <div class="body">
+      <p><b>Tujuan:</b> kerangka aplikasi berdiri; data bisa disimpan dan pengguna bisa masuk dengan aman.</p>
+      <ul><li>Buat skema database dari SQL bagian 4 lewat migrasi (Prisma/Laravel).</li><li>Fitur login, logout, dan peran admin / manager / employee (FR-01).</li><li>Layout dasar: sidebar, header, halaman dashboard kosong.</li><li>Middleware penjaga: halaman tanpa login → diarahkan ke login; peran salah → 403.</li></ul>
+      <div class="dod"><b>Definition of Done:</b><ul><li>Tiga akun contoh (satu per peran) bisa login.</li><li>Uji T-01 dan T-05 lulus.</li><li><code>npm run build</code> hijau.</li></ul></div>
+    </div>
+  </details>
+  <details>
+    <summary>Fase 2 — Data Master &amp; Target · Minggu 2–3</summary>
+    <div class="body">
+      <p><b>Tujuan:</b> admin dan manajer bisa menyiapkan “panggung”: departemen, pengguna, KPI, dan target.</p>
+      <ul><li>CRUD departemen &amp; pengguna untuk Admin HR (FR-02), termasuk nonaktifkan pengguna (soft delete).</li><li>CRUD KPI perpajakan per departemen + bobot; validasi total bobot = 100%.</li><li>Form penetapan target per KPI, karyawan, dan periode (FR-03) mengikuti endpoint bagian 5.</li></ul>
+      <div class="dod"><b>Definition of Done:</b><ul><li>Manajer pajak bisa menetapkan target “SPT Masa tepat waktu = 100%” untuk timnya.</li><li>Target dobel tertolak (uji T-06 lulus).</li></ul></div>
+    </div>
+  </details>
+  <details>
+    <summary>Fase 3 — Realisasi &amp; Peninjauan · Minggu 3–4</summary>
+    <div class="body">
+      <p><b>Tujuan:</b> alur inti pada user flow (bagian 2) berjalan ujung ke ujung.</p>
+      <ul><li>Form realisasi + tautan bukti (mis. bukti lapor SPT) dan tombol kirim (FR-04).</li><li>Halaman peninjauan manajer: setujui / kembalikan + komentar wajib (FR-05).</li><li>Status realisasi tampil jelas di dashboard karyawan, termasuk status “Perlu Revisi” beserta komentarnya.</li></ul>
+      <div class="dod"><b>Definition of Done:</b><ul><li>Satu realisasi berjalan penuh: draft → submitted → approved.</li><li>Satu realisasi dikembalikan dan diperbaiki ulang.</li><li>Uji T-02 dan T-03 lulus.</li></ul></div>
+    </div>
+  </details>
+  <details>
+    <summary>Fase 4 — Skor, Dashboard &amp; Laporan · Minggu 4–5</summary>
+    <div class="body">
+      <p><b>Tujuan:</b> hasil penilaian terlihat dan bisa dilaporkan — alasan website ini dibuat.</p>
+      <ul><li>Perhitungan capaian &amp; skor di server (FR-06) — dihitung, tidak disimpan (lihat ERD).</li><li>Dashboard: skor pribadi untuk karyawan; rata-rata departemen untuk manajer &amp; HR (FR-07).</li><li>Ekspor rekap per periode ke Excel untuk laporan manajemen.</li></ul>
+      <div class="dod"><b>Definition of Done:</b><ul><li>Uji T-04 cocok dengan hitungan manual sampai dua desimal.</li><li>File Excel hasil ekspor terbuka rapi dan angkanya sama dengan dashboard.</li></ul></div>
+    </div>
+  </details>
+  <details>
+    <summary>Fase 5 — Testing &amp; UAT · Minggu 5</summary>
+    <div class="body">
+      <p><b>Tujuan:</b> membuktikan sistem sesuai kebutuhan dengan pengguna asli, bukan perasaan developer.</p>
+      <ul><li>Jalankan seluruh skenario uji pada bagian 11.</li><li>UAT bersama 1 staf pajak, 1 manajer pajak, dan 1 Admin HR (checklist UAT bagian 11).</li><li>Perbaiki bug berdasarkan prioritas: penghalang alur utama dulu, kosmetik belakangan.</li></ul>
+      <div class="dod"><b>Definition of Done:</b><ul><li>Tidak ada bug prioritas P0 yang terbuka.</li><li>Berita acara UAT “sesuai kebutuhan” diterima (email cukup).</li></ul></div>
+    </div>
+  </details>
+  <details>
+    <summary>Fase 6 — Deploy &amp; Serah Terima · Minggu 6</summary>
+    <div class="body">
+      <p><b>Tujuan:</b> website tayang di production dengan aman dan bisa dirawat orang lain.</p>
+      <ul><li>Ikuti panduan deploy pada bagian 12: platform, environment, domain, SSL.</li><li>Aktifkan backup otomatis dan uji pemulihannya sekali.</li><li>Serahkan paket dokumentasi lengkap + daftar akses ke pemilik proyek.</li></ul>
+      <div class="dod"><b>Definition of Done:</b><ul><li>Checklist deploy bagian 12 tercentang semua.</li><li>Alur utama dicoba langsung di alamat production.</li><li>Cara rollback tertulis dan dipahami pemilik proyek.</li></ul></div>
+    </div>
+  </details>
+</section>
+
+<!-- ================= ROADMAP ================= -->
+<section id="roadmap">
+  <div class="sec-head"><div class="sec-num">9</div><div>
+    <h2>Roadmap — linimasa 6 minggu + maintenance</h2>
+    <p class="sec-sub">Versi visual dari implementation plan: satu kartu per minggu. <strong class="k">Milestone</strong> adalah hasil nyata yang bisa ditunjukkan di akhir minggu — bukan “sudah mengerjakan”, melainkan “sudah bisa didemokan”.</p>
+  </div></div>
+
+  <div class="road">
+    <div class="wk"><span class="w">MINGGU 1</span><h3>Setup &amp; Fondasi Awal</h3><p>PRD &amp; ERD final, repo + AGENTS.md siap, skema database terpasang, proyek kosong berjalan di lokal.</p><div class="ms"><b>Milestone:</b> dokumen disepakati &amp; <code>npm run dev</code> menampilkan halaman awal.</div></div>
+    <div class="wk"><span class="w">MINGGU 2</span><h3>Login &amp; Data Master</h3><p>Login tiga peran selesai; admin mengelola departemen &amp; pengguna; daftar KPI perpajakan mulai bisa dibuat.</p><div class="ms"><b>Milestone:</b> demo login sebagai admin, manajer, dan karyawan.</div></div>
+    <div class="wk"><span class="w">MINGGU 3</span><h3>Target &amp; Realisasi</h3><p>Manajer menetapkan target; karyawan mengisi realisasi + bukti lapor dan mengirimnya.</p><div class="ms"><b>Milestone:</b> satu siklus target → realisasi terkirim berjalan penuh.</div></div>
+    <div class="wk"><span class="w">MINGGU 4</span><h3>Peninjauan &amp; Skor</h3><p>Alur setujui / kembalikan dengan komentar; perhitungan skor otomatis; dashboard skor tampil.</p><div class="ms"><b>Milestone:</b> skor seorang karyawan tampil dan cocok dengan hitungan manual.</div></div>
+    <div class="wk"><span class="w">MINGGU 5</span><h3>Laporan, Testing &amp; UAT</h3><p>Ekspor Excel; seluruh skenario uji dijalankan; UAT bersama staf pajak, manajer, dan HR; perbaikan bug prioritas.</p><div class="ms"><b>Milestone:</b> berita acara UAT diterima, nol bug P0.</div></div>
+    <div class="wk"><span class="w">MINGGU 6</span><h3>Production</h3><p>Deploy ke production, domain &amp; HTTPS aktif, backup berjalan, pemantauan 3 hari pertama, serah terima dokumen.</p><div class="ms"><b>Milestone:</b> website KPI perpajakan tayang di alamat resmi &amp; dipakai tim.</div></div>
+  </div>
+  <div class="callout" style="margin-top:16px"><b>Setelah Minggu 6 — Maintenance (berkelanjutan):</b> cadangkan &amp; periksa log setiap minggu, kerjakan backlog P1 (rilis v1.1: kalender tenggat pajak, grafik tren), lalu P2 (v1.2). Setiap awal periode penilaian baru, tinjau ulang daftar KPI &amp; bobot bersama lead tim pajak — dan catat semuanya di devlog.</div>
+  <p class="mini" style="margin-top:10px">Terlambat di satu minggu? Geser milestone-nya, jangan memangkas Fase 5 (testing &amp; UAT) — memangkas pengujian adalah cara tercepat mengubah keterlambatan kecil menjadi kegagalan saat dipakai.</p>
+</section>
+
+<!-- ================= BACKLOG ================= -->
+<section id="backlog">
+  <div class="sec-head"><div class="sec-num">10</div><div>
+    <h2>Product Backlog — daftar pekerjaan berdasarkan prioritas</h2>
+    <p class="sec-sub">Satu daftar tunggal berisi semua user story / fitur, diurutkan prioritas. Inilah yang dibaca saat memilih “apa yang dikerjakan berikutnya” — oleh manusia maupun AI agent. Bagian ini <strong class="k">berbeda dari Deploy</strong>: backlog mengatur <i>apa yang dibangun</i>, deploy mengatur <i>bagaimana menayangkannya</i>.</p>
+  </div></div>
+
+  <div class="legend" style="margin:0 0 14px">
+    <span><span class="prio p0">P0</span> <b>Wajib untuk MVP</b> — tanpa ini website tidak berguna</span>
+    <span><span class="prio p1">P1</span> <b>Penting</b> — rilis berikutnya (v1.1)</span>
+    <span><span class="prio p2">P2</span> <b>Bagus bila ada</b> — v1.2 atau nanti</span>
+    <span><b>Estimasi</b> dalam story point (1 = ±setengah hari kerja pemula)</span>
+  </div>
+
+  <table class="tbl">
+    <thead><tr><th>ID</th><th>User story / fitur</th><th>Prioritas</th><th>Estimasi</th><th>Status</th><th>Rilis</th></tr></thead>
+    <tbody>
+      <tr><td data-l="ID"><code>US-01</code></td><td data-l="User story">Sebagai pengguna, saya bisa login dengan email kantor dan masuk sesuai peran saya (FR-01)</td><td data-l="Prioritas"><span class="prio p0">P0</span></td><td data-l="Estimasi">3 poin</td><td data-l="Status"><span class="st">Selesai</span></td><td data-l="Rilis">MVP</td></tr>
+      <tr><td data-l="ID"><code>US-02</code></td><td data-l="User story">Sebagai Admin HR, saya mengelola departemen &amp; pengguna, termasuk menonaktifkan akun (FR-02)</td><td data-l="Prioritas"><span class="prio p0">P0</span></td><td data-l="Estimasi">5 poin</td><td data-l="Status"><span class="st">Sedang dikerjakan</span></td><td data-l="Rilis">MVP</td></tr>
+      <tr><td data-l="ID"><code>US-03</code></td><td data-l="User story">Sebagai Admin HR, saya mengelola daftar KPI perpajakan (SPT tepat waktu, e-Faktur, rekonsiliasi) beserta bobotnya</td><td data-l="Prioritas"><span class="prio p0">P0</span></td><td data-l="Estimasi">5 poin</td><td data-l="Status"><span class="st">Belum mulai</span></td><td data-l="Rilis">MVP</td></tr>
+      <tr><td data-l="ID"><code>US-04</code></td><td data-l="User story">Sebagai manajer pajak, saya menetapkan target KPI tiap anggota tim per periode (FR-03)</td><td data-l="Prioritas"><span class="prio p0">P0</span></td><td data-l="Estimasi">3 poin</td><td data-l="Status"><span class="st">Belum mulai</span></td><td data-l="Rilis">MVP</td></tr>
+      <tr><td data-l="ID"><code>US-05</code></td><td data-l="User story">Sebagai staf pajak, saya mengisi realisasi KPI dan melampirkan bukti (mis. bukti lapor SPT) lalu mengirimnya (FR-04)</td><td data-l="Prioritas"><span class="prio p0">P0</span></td><td data-l="Estimasi">5 poin</td><td data-l="Status"><span class="st">Belum mulai</span></td><td data-l="Rilis">MVP</td></tr>
+      <tr><td data-l="ID"><code>US-06</code></td><td data-l="User story">Sebagai manajer pajak, saya menyetujui atau mengembalikan realisasi dengan komentar (FR-05)</td><td data-l="Prioritas"><span class="prio p0">P0</span></td><td data-l="Estimasi">3 poin</td><td data-l="Status"><span class="st">Belum mulai</span></td><td data-l="Rilis">MVP</td></tr>
+      <tr><td data-l="ID"><code>US-07</code></td><td data-l="User story">Sebagai pengguna, skor KPI saya dihitung otomatis dari capaian × bobot (FR-06)</td><td data-l="Prioritas"><span class="prio p0">P0</span></td><td data-l="Estimasi">3 poin</td><td data-l="Status"><span class="st">Belum mulai</span></td><td data-l="Rilis">MVP</td></tr>
+      <tr><td data-l="ID"><code>US-08</code></td><td data-l="User story">Sebagai pengguna, saya melihat dashboard skor saya; manajer &amp; HR melihat rata-rata departemen (FR-07)</td><td data-l="Prioritas"><span class="prio p0">P0</span></td><td data-l="Estimasi">5 poin</td><td data-l="Status"><span class="st">Belum mulai</span></td><td data-l="Rilis">MVP</td></tr>
+      <tr><td data-l="ID"><code>US-09</code></td><td data-l="User story">Sebagai Admin HR, saya mengekspor rekap skor per periode ke Excel untuk laporan manajemen</td><td data-l="Prioritas"><span class="prio p1">P1</span></td><td data-l="Estimasi">3 poin</td><td data-l="Status"><span class="st">Belum mulai</span></td><td data-l="Rilis">MVP bila sempat</td></tr>
+      <tr><td data-l="ID"><code>US-10</code></td><td data-l="User story">Sebagai staf pajak, saya melihat kalender tenggat pajak (jatuh tempo SPT Masa, SPT Tahunan) di dashboard</td><td data-l="Prioritas"><span class="prio p1">P1</span></td><td data-l="Estimasi">5 poin</td><td data-l="Status"><span class="st">Belum mulai</span></td><td data-l="Rilis">v1.1</td></tr>
+      <tr><td data-l="ID"><code>US-11</code></td><td data-l="User story">Sebagai manajer, saya melihat grafik tren skor tim saya dari periode ke periode</td><td data-l="Prioritas"><span class="prio p1">P1</span></td><td data-l="Estimasi">3 poin</td><td data-l="Status"><span class="st">Belum mulai</span></td><td data-l="Rilis">v1.1</td></tr>
+      <tr><td data-l="ID"><code>US-12</code></td><td data-l="User story">Sebagai staf pajak, saya menerima pengingat email sebelum tenggat pengisian realisasi &amp; pelaporan SPT</td><td data-l="Prioritas"><span class="prio p2">P2</span></td><td data-l="Estimasi">5 poin</td><td data-l="Status"><span class="st">Belum mulai</span></td><td data-l="Rilis">v1.2</td></tr>
+      <tr><td data-l="ID"><code>US-13</code></td><td data-l="User story">Sebagai pengguna, saya bisa berdiskusi lewat komentar langsung pada tiap realisasi</td><td data-l="Prioritas"><span class="prio p2">P2</span></td><td data-l="Estimasi">5 poin</td><td data-l="Status"><span class="st">Ditunda</span></td><td data-l="Rilis">v1.2</td></tr>
+    </tbody>
+  </table>
+  <p class="mini" style="margin-top:10px">Status pada tabel adalah <b>contoh pengisian di awal proyek</b> (US-01 selesai, US-02 berjalan). Aturan merawat backlog: (1) urutan dari atas = urutan dikerjakan; (2) item baru masuk lewat daftar ini, tidak lewat “titipan” di tengah fase; (3) status diperbarui setiap akhir hari kerja, bersamaan dengan menulis devlog; (4) item P0 tidak boleh bertambah setelah Fase 1 dimulai tanpa memindahkan item P0 lain keluar.</p>
+</section>
+
+<!-- ================= TESTING ================= -->
+<section id="testing">
+  <div class="sec-head"><div class="sec-num">11</div><div>
+    <h2>Rencana Testing &amp; UAT</h2>
+    <p class="sec-sub">Testing = membuktikan tiap kebutuhan fungsional (FR) di PRD benar-benar jalan, termasuk jalan gagalnya. UAT (User Acceptance Testing) = pengguna asli mencoba dengan data &amp; skenario nyata mereka.</p>
+  </div></div>
+
+  <table class="tbl">
+    <thead><tr><th>ID Uji</th><th>Skenario</th><th>Hasil yang benar</th></tr></thead>
+    <tbody>
+      <tr><td data-l="ID"><code>T-01</code> (FR-01)</td><td data-l="Skenario">Login dengan kata sandi salah</td><td data-l="Hasil benar">Ditolak dengan pesan jelas, tidak masuk dashboard</td></tr>
+      <tr><td data-l="ID"><code>T-02</code> (FR-04)</td><td data-l="Skenario">Karyawan mengirim realisasi tanpa bukti</td><td data-l="Hasil benar">Boleh kirim, tapi sistem menandai “bukti kosong” untuk manajer</td></tr>
+      <tr><td data-l="ID"><code>T-03</code> (FR-05)</td><td data-l="Skenario">Manajer mengembalikan realisasi tanpa komentar</td><td data-l="Hasil benar">Ditolak — komentar wajib saat mengembalikan</td></tr>
+      <tr><td data-l="ID"><code>T-04</code> (FR-06)</td><td data-l="Skenario">Target 100, realisasi 80, bobot 30%</td><td data-l="Hasil benar">Capaian 80%, kontribusi skor 24 poin — cocok hitungan manual</td></tr>
+      <tr><td data-l="ID"><code>T-05</code> (akses)</td><td data-l="Skenario">Karyawan membuka rekap departemen lain lewat URL langsung</td><td data-l="Hasil benar">403 — tidak berhak, data tidak bocor</td></tr>
+      <tr><td data-l="ID"><code>T-06</code> (FR-03)</td><td data-l="Skenario">Manajer membuat target dobel untuk KPI, orang &amp; periode yang sama</td><td data-l="Hasil benar">Ditolak oleh aturan UNIQUE di database</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card" style="margin-top:14px">
+    <h3 style="margin-top:0">Checklist UAT (diisi bersama pengguna asli)</h3>
+    <ul class="check">
+      <li><b>1 karyawan mencoba alur penuh</b><span>Login → lihat target → isi realisasi → kirim, tanpa dibantu. Catat di langkah mana dia bingung.</span></li>
+      <li><b>1 manajer meninjau sampai tuntas</b><span>Menyetujui satu realisasi dan mengembalikan satu lainnya dengan komentar.</span></li>
+      <li><b>Admin HR mengekspor rekap</b><span>File Excel terbuka rapi dan angkanya cocok dengan dashboard.</span></li>
+      <li><b>Angka diuji silang manual</b><span>Satu karyawan dihitung ulang dengan kalkulator/spreadsheet lama — hasilnya harus sama persis.</span></li>
+      <li><b>Surat berita acara sederhana</b><span>Pengguna menyatakan “sesuai kebutuhan” tertulis (email pun cukup) sebelum website dinyatakan selesai.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= DEPLOY ================= -->
+<section id="deploy">
+  <div class="sec-head"><div class="sec-num">12</div><div>
+    <h2>Deploy — panduan menaikkan website ke production</h2>
+    <p class="sec-sub">Production adalah website asli yang dipakai orang beneran. Bagian ini berdiri sendiri: memilih platform, langkah deploy dari lokal sampai tayang, environment variables, domain &amp; SSL, checklist, dan cara rollback. (Urusan <i>fitur apa yang dibangun</i> ada di Backlog, bagian 10 — bukan di sini.)</p>
+  </div></div>
+
+  <h3>Pilihan platform deploy</h3>
+  <div class="grid c3">
+    <div class="doc-card"><span class="tag">PALING MUDAH</span><h3>Vercel + Neon / Supabase</h3><p>Untuk stack Next.js. Hubungkan repo GitHub, setiap push ke main otomatis ter-deploy; database PostgreSQL terkelola. HTTPS otomatis. Cocok untuk pemula &amp; proyek internal.</p><p class="when">Biaya awal: <span>gratis (free tier) untuk skala tim kecil</span></p></div>
+    <div class="doc-card"><span class="tag">FLEKSIBEL</span><h3>VPS (mis. Ubuntu)</h3><p>Server sendiri: pasang Node.js/Laravel + Nginx + PM2, database di server yang sama atau terpisah. Kendali penuh, tapi keamanan &amp; update jadi tanggung jawab sendiri.</p><p class="when">Biaya awal: <span>sewa VPS bulanan, perlu sedikit keahlian server</span></p></div>
+    <div class="doc-card"><span class="tag">KLASIK PHP</span><h3>Shared Hosting + MySQL</h3><p>Untuk stack Laravel/PHP. Unggah lewat panel hosting, database dibuat dari panel. Paling murah dan banyak tutorial Indonesia, tapi terbatas untuk aplikasi modern.</p><p class="when">Biaya awal: <span>termurah; cocok Opsi B di bagian 6</span></p></div>
+  </div>
+
+  <h3>Langkah deploy dari lokal ke production</h3>
+  <div class="card">
+    <div class="steps">
+      <div class="step"><div class="n"></div><div><b>Bekukan versi rilis</b><p>Pastikan semua uji kritis lulus di lokal, lalu beri tanda versi di Git: <code>git tag v1.0.0</code>. Tag ini jangkar untuk rollback.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Siapkan environment variables di platform</b><p>Isi variabel rahasia lewat dashboard platform (bukan di kode). Daftarnya pada tabel di bawah.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Buat database production</b><p>Jalankan migrasi dari skema resmi (bagian 4), lalu buat satu akun admin pertama.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Deploy aplikasinya</b><p>Vercel: push ke main. VPS: <code>git pull</code>, <code>npm install</code>, <code>npm run build</code>, restart PM2. Shared hosting: unggah build lewat panel.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Pasang domain &amp; SSL</b><p>Arahkan DNS domain (mis. <code>kpi.kantor.id</code>) ke platform, tunggu propagasi, pastikan HTTPS aktif — di Vercel &amp; kebanyakan platform ini otomatis (sertifikat Let’s Encrypt); di VPS gunakan Certbot.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Smoke test di alamat asli</b><p>Klik alur utama di production: login → isi realisasi → tinjau → ekspor. Bukan hanya halaman depan.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Umumkan &amp; pantau</b><p>Beri tahu pengguna, pantau log error 3 hari pertama, catat semua kejadian di devlog.</p></div></div>
+    </div>
+  </div>
+
+  <h3>Environment variables yang dibutuhkan</h3>
+  <table class="tbl">
+    <thead><tr><th>Variabel</th><th>Isi</th><th>Catatan</th></tr></thead>
+    <tbody>
+      <tr><td data-l="Variabel"><code>DATABASE_URL</code></td><td data-l="Isi">Alamat koneksi PostgreSQL/MySQL production</td><td data-l="Catatan">Berbeda dari lokal; jangan pernah memakai database uji untuk production</td></tr>
+      <tr><td data-l="Variabel"><code>JWT_SECRET</code></td><td data-l="Isi">Kunci acak panjang untuk token login</td><td data-l="Catatan">Buat baru khusus production; menggantinya membuat semua sesi login berakhir</td></tr>
+      <tr><td data-l="Variabel"><code>APP_URL</code></td><td data-l="Isi">Alamat resmi, mis. <code>https://kpi.kantor.id</code></td><td data-l="Catatan">Dipakai untuk tautan di email &amp; redirect login</td></tr>
+      <tr><td data-l="Variabel"><code>SMTP_HOST</code> dkk. <span class="mini">(opsional)</span></td><td data-l="Isi">Pengaturan server email</td><td data-l="Catatan">Hanya bila memakai pengingat email (backlog US-12)</td></tr>
+    </tbody>
+  </table>
+  <p class="mini">Aturan rahasia: file <code>.env</code> tidak pernah di-commit ke Git (masukkan ke <code>.gitignore</code> sejak hari pertama). Yang boleh di-commit hanya <code>.env.example</code> — daftar nama variabel tanpa nilainya.</p>
+
+  <h3>Checklist deploy</h3>
+  <div class="grid c2">
+    <div class="card"><h3 style="margin-top:0">Sebelum tayang</h3>
+      <ul class="check">
+        <li><b>Semua uji kritis lulus</b><span>Terutama login, hak akses, dan perhitungan skor.</span></li>
+        <li><b>Variabel rahasia dipasang di server</b><span>DATABASE_URL, JWT_SECRET — lewat pengaturan hosting, bukan di kode.</span></li>
+        <li><b>Database production dibuat dari skema resmi</b><span>Jalankan SQL bagian 4, bukan menyalin database uji sembarangan.</span></li>
+        <li><b>Akun awal dibuat</b><span>Satu admin pertama dengan kata sandi kuat, langsung diganti setelah login pertama.</span></li>
+        <li><b>Backup otomatis aktif</b><span>Uji sekali: backup benar-benar terbuat dan bisa dipulihkan.</span></li>
+      </ul>
+    </div>
+    <div class="card"><h3 style="margin-top:0">Saat &amp; sesudah tayang</h3>
+      <ul class="check">
+        <li><b>Domain &amp; HTTPS aktif</b><span>Alamat resmi (mis. kpi.kantor.id) terbuka dengan gembok HTTPS.</span></li>
+        <li><b>Klik semua alur utama di alamat asli</b><span>Login, isi realisasi, tinjau, ekspor — di production, bukan hanya di lokal.</span></li>
+        <li><b>Rencana rollback ditulis</b><span>“Bila error fatal: kembalikan ke versi commit sebelumnya &amp; pulihkan backup jam X.” Satu paragraf cukup.</span></li>
+        <li><b>Pantau 3 hari pertama</b><span>Periksa log error tiap pagi; kumpulkan keluhan pengguna di satu daftar.</span></li>
+        <li><b>Dokumentasi diserahkan</b><span>PRD, ERD, skema, dan daftar akses disimpan di satu folder bersama — proyek tidak bergantung pada ingatan satu orang.</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3 style="margin-top:0">Cara rollback bila deploy gagal</h3>
+    <div class="steps">
+      <div class="step"><div class="n"></div><div><b>Kenali pemicunya</b><p>Error fatal setelah rilis: pengguna tidak bisa login, halaman utama kosong, atau angka skor salah. Jangan panik-perbaiki di production.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Kembalikan aplikasi ke versi sehat terakhir</b><p>Vercel: buka daftar deployment → pilih versi sebelumnya → “Promote to Production”. VPS/hosting: <code>git checkout v1.0.0</code> (tag rilis sehat), build ulang, restart.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Pulihkan database hanya bila perlu</b><p>Hanya bila rilis gagal sempat mengubah skema / merusak data: pulihkan backup terakhir sebelum deploy. Langkah ini menghilangkan data yang masuk setelah backup — umumkan ke pengguna.</p></div></div>
+      <div class="step"><div class="n"></div><div><b>Verifikasi &amp; catat</b><p>Ulangi smoke test di versi rollback, lalu tulis kejadiannya di devlog: penyebab, dampak, dan perbaikan agar tidak terulang.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DEVLOG ================= -->
+<section id="devlog">
+  <div class="sec-head"><div class="sec-num">13</div><div>
+    <h2>Devlog — catatan harian pengembangan</h2>
+    <p class="sec-sub">Development log: jurnal singkat yang ditulis setiap hari kerja. Bukan laporan untuk atasan — ini <strong class="k">ingatan proyek</strong>. Simpan sebagai <code>docs/devlog.md</code> di repo yang sama, entri terbaru di paling atas.</p>
+  </div></div>
+
+  <div class="grid c2">
+    <div class="card"><h3 style="margin-top:0">Kenapa devlog penting — apalagi dengan AI agentic</h3>
+      <ul>
+        <li><b>Sesi AI itu amnesia.</b> Agent memulai sesi baru tanpa ingatan sesi kemarin. Devlog (bersama AGENTS.md) adalah hal pertama yang ia baca, supaya konteks tidak hilang.</li>
+        <li><b>Kesalahan tidak terulang.</b> Pendekatan yang pernah gagal tercatat beserta alasannya — agent tidak mengusulkan jalan buntu yang sama dua kali.</li>
+        <li><b>Keputusan punya alasan.</b> “Kenapa skor tidak disimpan?” terjawab dari catatan, bukan dari ingatan yang samar enam bulan kemudian.</li>
+        <li><b>Kemajuan terlihat.</b> Saat merasa “kok nggak selesai-selesai”, devlog menunjukkan seberapa jauh proyek sudah berjalan — penangkal klasik proyek yang berhenti di tengah.</li>
+        <li><b>Blocker cepat terlihat.</b> Kendala yang ditulis hari ini bisa dibantu besok; kendala yang dipendam muncul sebagai kejutan di akhir.</li>
+      </ul>
+    </div>
+    <div class="card"><h3 style="margin-top:0">Aturan main menulis devlog</h3>
+      <div class="steps">
+        <div class="step"><div class="n"></div><div><b>Tulis di akhir hari kerja, 5–10 menit</b><p>Singkat dan jujur lebih baik daripada panjang tapi seminggu sekali.</p></div></div>
+        <div class="step"><div class="n"></div><div><b>Satu entri per hari aktif</b><p>Tidak ngoding hari ini? Tidak perlu entri.</p></div></div>
+        <div class="step"><div class="n"></div><div><b>Keputusan selalu dengan alasan</b><p>Tulis “memilih X karena Y”, bukan hanya “memilih X”.</p></div></div>
+        <div class="step"><div class="n"></div><div><b>Akhiri dengan langkah berikutnya</b><p>Entri yang baik membuat sesi besok — manusia atau AI — bisa langsung mulai tanpa berpikir ulang dari nol.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Template entri devlog — salin setiap hari</h3>
+  <div class="codebox">
+    <button class="copy-btn" data-copy="tpl-devlog">Salin template</button>
+<pre id="tpl-devlog">## [Tanggal] — Hari ke-[n] (Minggu [x], Fase [nama fase])
+Backlog dikerjakan: [ID, contoh US-05]
+
+### Yang dikerjakan
+- [...]
+
+### Keputusan yang diambil
+- [Pilihan] — karena [alasan]
+
+### Kendala / blocker
+- [...] (atau: tidak ada)
+
+### Yang dipelajari
+- [...]
+
+### Langkah selanjutnya
+- [...]</pre>
+  </div>
+
+  <h3>Contoh entri terisi — website KPI perpajakan</h3>
+
+  <div class="devlog-entry">
+    <span class="date">HARI KE-3 · MINGGU 1 · FASE 1 — FONDASI</span>
+    <h3>Skema database terpasang, migrasi pertama jalan</h3>
+    <dl>
+      <div><dt>Yang dikerjakan</dt><dd>Menerjemahkan SQL bagian 4 menjadi <code>schema.prisma</code>; migrasi pertama untuk tabel departments, users, kpis. Repo terhubung ke GitHub.</dd></div>
+      <div><dt>Keputusan</dt><dd>Skor KPI tidak dibuatkan tabel — dihitung dari target × realisasi, sesuai catatan di ERD, supaya angka tidak basi saat target diubah.</dd></div>
+      <div><dt>Kendala</dt><dd>Migrasi gagal: relasi melingkar departments.manager_id ↔ users.department_id. Diatasi dengan membuat kedua tabel dulu tanpa FK, lalu menambahkan FK lewat migrasi kedua.</dd></div>
+      <div><dt>Yang dipelajari</dt><dd>Urutan pembuatan tabel penting saat ada relasi dua arah; catat pola ini agar tidak mengulang debugging yang sama.</dd></div>
+      <div><dt>Langkah selanjutnya</dt><dd>Fitur login + peran (US-01), mulai dari endpoint <code>/api/auth/login</code>.</dd></div>
+    </dl>
+  </div>
+
+  <div class="devlog-entry">
+    <span class="date">HARI KE-11 · MINGGU 3 · FASE 3 — REALISASI &amp; PENINJAUAN</span>
+    <h3>Form realisasi selesai; usulan agent ditolak demi ERD</h3>
+    <dl>
+      <div><dt>Yang dikerjakan</dt><dd>Form input realisasi + tautan bukti lapor SPT (US-05) dan tombol kirim; status berubah ke “Menunggu Tinjauan”.</dd></div>
+      <div><dt>Keputusan</dt><dd>Agent mengusulkan menyimpan skor ke tabel <code>kpi_actuals</code> “supaya cepat” — <b>ditolak</b>, melanggar aturan di AGENTS.md &amp; ERD. Validasi “komentar wajib saat mengembalikan” ditaruh di backend, bukan hanya frontend, supaya tidak bisa diakali.</dd></div>
+      <div><dt>Kendala</dt><dd>Belum ada: alur berjalan, tapi uji T-02 (realisasi tanpa bukti) belum ditulis.</dd></div>
+      <div><dt>Yang dipelajari</dt><dd>AGENTS.md bekerja: aturan tertulis membuat koreksi ke agent cukup satu kalimat dan alasannya jelas.</dd></div>
+      <div><dt>Langkah selanjutnya</dt><dd>Halaman peninjauan manajer (US-06) + tulis uji T-02 dan T-03.</dd></div>
+    </dl>
+  </div>
+
+  <div class="devlog-entry">
+    <span class="date">HARI KE-24 · MINGGU 5 · FASE 5 — TESTING &amp; UAT</span>
+    <h3>UAT pertama: istilah status membingungkan pengguna</h3>
+    <dl>
+      <div><dt>Yang dikerjakan</dt><dd>UAT bersama 1 staf pajak dan 1 manajer pajak memakai checklist bagian 11; seluruh skenario uji T-01 s.d. T-06 lulus.</dd></div>
+      <div><dt>Keputusan</dt><dd>Label status <code>revision</code> diganti tampilan “Perlu Revisi” dan komentar manajer ditampilkan langsung di dashboard karyawan — staf pajak sempat mengira status itu berarti “ditolak permanen”.</dd></div>
+      <div><dt>Kendala</dt><dd>Ekspor Excel (US-09) belum selesai; disepakati masuk minggu yang sama karena HR membutuhkannya untuk laporan manajemen — dicatat sebagai pengecualian, bukan kebiasaan menambah P0.</dd></div>
+      <div><dt>Yang dipelajari</dt><dd>Istilah teknis di database tidak harus sama dengan istilah di layar; pengguna berpikir dengan bahasa mereka.</dd></div>
+      <div><dt>Langkah selanjutnya</dt><dd>Selesaikan US-09, perbaiki label status, uji ulang singkat, lalu siapkan deploy (Fase 6).</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ================= PROMPT AI ================= -->
+<section id="prompt">
+  <div class="sec-head"><div class="sec-num">✦</div><div>
+    <h2>Bonus: minta AI membantu menyusun dokumen</h2>
+    <p class="sec-sub">Dokumen-dokumen ini juga adalah <strong class="k">bahan bakar terbaik untuk AI agentic</strong>: PRD + ERD yang jelas membuat AI menghasilkan kode yang jauh lebih tepat. Salin prompt berikut, sesuaikan isinya.</p>
+  </div></div>
+
+  <div class="codebox">
+    <button class="copy-btn" data-copy="tpl-prompt1">Salin prompt</button>
+<pre id="tpl-prompt1">Prompt 1 — Menyusun PRD
+"Kamu adalah product manager. Bantu aku menyusun PRD untuk website
+[tulis idenya, contoh: pencatatan KPI karyawan].
+Penggunanya: [admin HR, manajer, karyawan].
+Masalah sekarang: [tulis masalahnya].
+Buat PRD lengkap: latar belakang, tujuan terukur, peran pengguna,
+ruang lingkup MASUK dan TIDAK MASUK, user story, kebutuhan
+fungsional bernomor FR-01 dst, dan kebutuhan non-fungsional.
+Tanyakan dulu hal yang belum jelas, jangan mengarang fitur."</pre>
+  </div>
+  <div class="codebox">
+    <button class="copy-btn" data-copy="tpl-prompt2">Salin prompt</button>
+<pre id="tpl-prompt2">Prompt 2 — Menyusun ERD dari PRD
+"Berikut PRD-ku: [tempel isi PRD].
+Turunkan ERD darinya: daftar entitas, atribut + tipe data,
+primary key, foreign key, dan relasi (1-N atau N-N) antar entitas.
+Jelaskan alasan setiap relasi dalam satu kalimat, tandai data
+yang sebaiknya dihitung (bukan disimpan), lalu tuliskan skema
+SQL CREATE TABLE-nya untuk PostgreSQL."</pre>
+  </div>
+  <div class="codebox">
+    <button class="copy-btn" data-copy="tpl-prompt3">Salin prompt</button>
+<pre id="tpl-prompt3">Prompt 3 — Membangun dengan dokumen sebagai pegangan
+"Ini PRD dan skema database proyekku: [tempel keduanya].
+Bangun fitur FR-04 saja (input realisasi KPI) secara utuh:
+halaman form, endpoint API, dan query databasenya.
+Jangan menambah fitur di luar PRD. Setelah selesai, tuliskan
+3 skenario uji untuk fitur ini, termasuk satu skenario gagal."</pre>
+  </div>
+  <p class="mini">Pola yang sama untuk semua prompt: <b>beri konteks (dokumen) → minta satu hasil yang spesifik → larang mengarang di luar dokumen → minta cara mengujinya.</b></p>
+</section>
+
+<!-- ================= GLOSARIUM ================= -->
+<section id="glosarium">
+  <div class="sec-head"><div class="sec-num">✦</div><div>
+    <h2>Glosarium singkat</h2>
+    <p class="sec-sub">Istilah yang muncul berulang di dokumen-dokumen ini.</p>
+  </div></div>
+  <div class="card">
+    <dl class="gloss">
+      <div><dt>PRD</dt><dd>Product Requirements Document — dokumen kebutuhan produk: apa yang dibangun, untuk siapa, dan batasannya.</dd></div>
+      <div><dt>ERD</dt><dd>Entity Relationship Diagram — diagram entitas data dan hubungan antar-entitas; cikal bakal struktur database.</dd></div>
+      <div><dt>MVP</dt><dd>Minimum Viable Product — versi pertama paling kecil yang sudah utuh dan berguna; fitur lain menyusul.</dd></div>
+      <div><dt>Entitas</dt><dd>“Benda” yang datanya disimpan: pengguna, KPI, departemen. Umumnya menjadi satu tabel.</dd></div>
+      <div><dt>Primary Key</dt><dd>Kolom identitas unik tiap baris (biasanya <code>id</code>). Tidak boleh dobel, tidak boleh kosong.</dd></div>
+      <div><dt>Foreign Key</dt><dd>Kolom penunjuk ke primary key tabel lain — inilah yang mewujudkan relasi di database.</dd></div>
+      <div><dt>Kardinalitas</dt><dd>Pola jumlah relasi: 1—1, 1—N (satu ke banyak), N—N (banyak ke banyak, wajib tabel perantara).</dd></div>
+      <div><dt>CRUD</dt><dd>Create, Read, Update, Delete — empat operasi dasar data; hampir semua fitur adalah variasinya.</dd></div>
+      <div><dt>API / Endpoint</dt><dd>Jalur resmi frontend meminta data ke backend; endpoint = satu alamat + method (GET/POST/PUT/DELETE).</dd></div>
+      <div><dt>UAT</dt><dd>User Acceptance Testing — pengujian oleh pengguna asli untuk menyatakan hasil sesuai kebutuhan.</dd></div>
+      <div><dt>Deployment</dt><dd>Proses menaikkan website dari komputer pengembang ke server production agar bisa diakses publik.</dd></div>
+      <div><dt>Rollback</dt><dd>Kembali ke versi sebelumnya yang sehat ketika rilis baru bermasalah.</dd></div>
+      <div><dt>AGENTS.md</dt><dd>File aturan main untuk AI agent di root repo: peran, perintah yang boleh/dilarang, struktur folder, dan cara menjalankan proyek.</dd></div>
+      <div><dt>Backlog</dt><dd>Daftar tunggal user story / fitur terurut prioritas (P0/P1/P2) beserta estimasi dan status; sumber “apa yang dikerjakan berikutnya”.</dd></div>
+      <div><dt>Story Point</dt><dd>Satuan estimasi relatif untuk ukuran pekerjaan (bukan jam pasti); 1 poin ≈ setengah hari kerja pada panduan ini.</dd></div>
+      <div><dt>Definition of Done</dt><dd>Syarat objektif penanda sebuah fase / item backlog benar-benar selesai, disepakati sebelum pekerjaan dimulai.</dd></div>
+      <div><dt>Milestone</dt><dd>Hasil nyata yang bisa didemokan pada titik waktu tertentu di roadmap, mis. “demo login tiga peran”.</dd></div>
+      <div><dt>Devlog</dt><dd>Development log — jurnal harian pengembangan: pekerjaan, keputusan + alasannya, kendala, pelajaran, dan langkah berikutnya.</dd></div>
+      <div><dt>Environment Variable</dt><dd>Pengaturan rahasia / khusus server (mis. DATABASE_URL) yang disimpan di luar kode dan tidak pernah di-commit.</dd></div>
+    </dl>
+  </div>
+
+  <details>
+    <summary>Kesalahan pemula yang paling sering terjadi</summary>
+    <div class="body">
+      <ul>
+        <li><b>Langsung ngoding tanpa PRD</b> — fitur bertambah terus di tengah jalan (“scope creep”), proyek tidak pernah selesai. Ini penyebab klasik website yang “nggak pernah jadi”.</li>
+        <li><b>Menyimpan data hasil hitungan</b> — skor disimpan sebagai angka tetap, lalu target berubah dan skor jadi basi. Hitung saat dibutuhkan.</li>
+        <li><b>Satu tabel untuk semua</b> — nama karyawan, departemen, dan KPI dicampur dalam satu tabel besar; data dobel dan sulit diubah. Pecah mengikuti entitas di ERD.</li>
+        <li><b>Relasi N—N tanpa tabel perantara</b> — memaksa banyak nilai dalam satu kolom (“kpi_id: 3,5,9”). Selalu pecah jadi tabel penghubung.</li>
+        <li><b>Tidak menulis yang TIDAK dibuat</b> — scope yang hanya berisi daftar “masuk” akan selalu membengkak. Daftar “tidak masuk” adalah remnya.</li>
+        <li><b>Testing hanya jalan sukses</b> — yang merusak kepercayaan pengguna justru jalan gagal: salah sandi, data kosong, akses tak berhak. Uji keduanya.</li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<footer>
+  <p><b>Ringkasan satu kalimat:</b> PRD mengunci <i>apa</i>, user flow mengunci <i>alur</i>, ERD &amp; skema mengunci <i>data</i>, API mengunci <i>kontrak</i>, AGENTS.md mengunci <i>aturan main agent</i>, backlog &amp; roadmap mengunci <i>urutan kerja</i>, testing membuktikan semuanya, deploy menayangkannya dengan aman, dan devlog menjaga <i>ingatannya</i>.</p>
+  <p>Paket ini memakai studi kasus website KPI perpajakan — ganti entitas dan fiturnya, pola dokumennya tetap sama untuk website apa pun.</p>
+</footer>
+</main>
+</div><!-- /.layout -->
+
+<script>
+(function(){
+  // ---- Copy buttons ----
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var el = document.getElementById(btn.getAttribute('data-copy'));
+      if(!el) return;
+      var text = el.innerText;
+      function done(){
+        var old = btn.textContent;
+        btn.textContent = '✓ Tersalin';
+        btn.classList.add('done');
+        setTimeout(function(){ btn.textContent = old; btn.classList.remove('done'); }, 1800);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done).catch(function(){ fallback(); });
+      } else { fallback(); }
+      function fallback(){
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch(e){}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+
+  // ---- ERD interactivity ----
+  var info = {
+    departments: '<b>departments</b> — daftar departemen/divisi. Terhubung 1—N ke <b>users</b> (satu departemen banyak karyawan) dan 1—N ke <b>kpis</b> (KPI dimiliki per departemen). Kolom <i>manager_id</i> menunjuk ke users: kepala departemennya juga seorang pengguna.',
+    users: '<b>users</b> — semua orang yang bisa login: admin, manajer, karyawan (dibedakan kolom <i>role</i>). Terhubung ke <b>departments</b> (N—1), <b>kpi_actuals</b> (1—N, realisasi yang ia isi), <b>kpi_targets</b> (1—N), dan <b>reviews</b> (1—N, tinjauan yang ia tulis sebagai manajer).',
+    kpis: '<b>kpis</b> — definisi indikator penilaian: nama, satuan, dan bobot. Dimiliki satu <b>departments</b>, dan menjadi induk bagi <b>kpi_targets</b> serta <b>kpi_actuals</b>. Definisi dipisah dari angka target/realisasi supaya definisi yang sama dipakai lintas periode.',
+    kpi_targets: '<b>kpi_targets</b> — angka target untuk satu KPI, satu karyawan, satu periode. Kunci unik gabungan (kpi_id, user_id, period) mencegah target dobel. Ditulis oleh manajer (FR-03).',
+    kpi_actuals: '<b>kpi_actuals</b> — realisasi yang diisi karyawan: nilai capaian, tautan bukti, dan status alur (draft → submitted → approved / revision). Menjadi dasar perhitungan skor dan obyek yang ditinjau di <b>reviews</b>.',
+    reviews: '<b>reviews</b> — riwayat tinjauan manajer atas satu realisasi: keputusan (approved/revision), komentar, dan waktu. Sengaja 1—N dari kpi_actuals supaya setiap putaran revisi tercatat, bukan ditimpa.',
+    scores: '<b>scores</b> — bukan tabel. Skor adalah data turunan: capaian = actual_value ÷ target_value, skor akhir = Σ (capaian × bobot KPI). Dihitung saat dashboard dibuka, sehingga selalu konsisten dengan data terbaru.'
+  };
+  var infoBox = document.getElementById('erd-info');
+  var ents = document.querySelectorAll('.ent');
+  var rels = document.querySelectorAll('.rel');
+  function activate(name){
+    ents.forEach(function(g){ g.classList.toggle('active', g.getAttribute('data-ent')===name); });
+    rels.forEach(function(l){
+      var parts = (l.getAttribute('data-rel')||'').split(' ');
+      l.classList.toggle('active', parts.indexOf(name) !== -1);
+    });
+    if (info[name]) infoBox.innerHTML = info[name];
+  }
+  ents.forEach(function(g){
+    var name = g.getAttribute('data-ent');
+    g.addEventListener('click', function(){ activate(name); });
+    g.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); activate(name); } });
+  });
+})();
+</script>
+<script>
+(function(){
+  // ---- Reading progress ----
+  var bar = document.getElementById('progress-bar');
+  var pct = document.getElementById('read-pct');
+  function onScroll(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? Math.min(1, Math.max(0, (window.scrollY || h.scrollTop) / max)) : 0;
+    if (bar) bar.style.width = (p * 100) + '%';
+    if (pct) pct.textContent = Math.round(p * 100) + '% terbaca';
+  }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
+
+  // ---- Mobile chapter drawer ----
+  var sb = document.getElementById('sidebar');
+  var tg = document.getElementById('toc-toggle');
+  var sc = document.getElementById('scrim');
+  function closeDrawer(){
+    if (sb) sb.classList.remove('open');
+    if (sc) sc.classList.remove('show');
+    if (tg) tg.setAttribute('aria-expanded','false');
+    document.body.classList.remove('locked');
+  }
+  if (tg && sb){
+    tg.addEventListener('click', function(){
+      var open = sb.classList.toggle('open');
+      if (sc) sc.classList.toggle('show', open);
+      tg.setAttribute('aria-expanded', open ? 'true' : 'false');
+      document.body.classList.toggle('locked', open);
+    });
+  }
+  if (sc) sc.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.toc a').forEach(function(a){ a.addEventListener('click', closeDrawer); });
+
+  // ---- Scrollspy: highlight current chapter ----
+  var links = {};
+  document.querySelectorAll('.toc a').forEach(function(a){
+    links[a.getAttribute('href').slice(1)] = a;
+  });
+  var secs = document.querySelectorAll('main.book section[id]');
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          Object.keys(links).forEach(function(k){ links[k].classList.remove('active'); });
+          var l = links[e.target.id];
+          if (l) l.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-25% 0px -65% 0px' });
+    secs.forEach(function(s){ io.observe(s); });
+  }
+
+  // ---- Previous / next chapter navigation ----
+  var order = [];
+  document.querySelectorAll('.toc a').forEach(function(a){
+    order.push({ id: a.getAttribute('href').slice(1), label: a.textContent.trim() });
+  });
+  order.forEach(function(item, i){
+    var sec = document.getElementById(item.id);
+    if (!sec) return;
+    var nav = document.createElement('nav');
+    nav.className = 'pagenav';
+    nav.setAttribute('aria-label', 'Navigasi bab');
+    var html = '';
+    if (i > 0) html += '<a class="pg prev" href="#' + order[i-1].id + '"><small>&larr; Bab sebelumnya</small><b>' + order[i-1].label + '</b></a>';
+    else html += '<span></span>';
+    if (i < order.length - 1) html += '<a class="pg next" href="#' + order[i+1].id + '"><small>Bab berikutnya &rarr;</small><b>' + order[i+1].label + '</b></a>';
+    nav.innerHTML = html;
+    sec.appendChild(nav);
+  });
+})();
+</script>
+</body>
+</html>

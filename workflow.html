@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>Workflow AI Agentic: Website Nol ke Production</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f6f5; --surface:#ffffff; --surface-2:#eef2f0; --ink:#1c2a25; --muted:#5a6b64; --line:#d9e2de;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#e2f1ee;
+  --amber:#b45309; --amber-soft:#fdf6e0; --red:#b91c1c; --red-soft:#fdeeee; --green-soft:#e6f4ec;
+  --code-bg:#f0f3f1; --code-ink:#22332c; --code-line:#dde5e1;
+  --fs:17.5px;
+  --toolbar-h:56px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0c1210; --surface:#141c19; --surface-2:#1b2622; --ink:#e6efec; --muted:#9db0a8; --line:#2a3a34;
+    --accent:#2dd4bf; --accent-ink:#06231f; --accent-soft:#123832;
+    --amber:#fbbf24; --amber-soft:#2e2508; --red:#fca5a5; --red-soft:#331414; --green-soft:#12291c;
+    --code-bg:#0a120f; --code-ink:#c8ece3; --code-line:#24352e;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Lora",Georgia,"Times New Roman",serif;background:var(--bg);color:var(--ink);line-height:1.8;font-size:var(--fs)}
+h1,h2,h3,h4,.sans{font-family:"Plus Jakarta Sans",system-ui,sans-serif}
+a{color:var(--accent);font-weight:600}
+button{min-height:2.5rem;font-family:"Plus Jakarta Sans",system-ui,sans-serif}
+.mono{font-family:"JetBrains Mono",monospace;font-size:.88em;background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:.05em .35em}
+::selection{background:var(--accent-soft)}
+
+/* reading progress */
+.progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);width:0;z-index:80}
+
+/* toolbar */
+.toolbar{position:sticky;top:0;z-index:70;height:var(--toolbar-h);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.toolbar-in{max-width:1240px;margin:0 auto;height:100%;padding:0 16px;display:flex;align-items:center;gap:10px}
+.toc-btn{display:none;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:8px 13px;font-weight:700;font-size:.85rem;cursor:pointer;min-height:40px}
+.toc-btn .bars{font-size:1rem;line-height:1}
+.toolbar .book-mark{font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;font-size:.88rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.toolbar .spacer{flex:1}
+.read-pct{font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--muted);min-width:38px;text-align:right}
+.font-ctl{display:flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:3px}
+.font-ctl button{background:none;border:none;color:var(--ink);cursor:pointer;border-radius:6px;padding:4px 10px;min-height:34px;font-weight:700;line-height:1}
+.font-ctl button:hover{background:var(--surface-2)}
+.font-ctl button:disabled{opacity:.35;cursor:default}
+.font-ctl .f-sm{font-size:.78rem}.font-ctl .f-md{font-size:.95rem}.font-ctl .f-lg{font-size:1.15rem}
+.font-ctl .f-label{font-size:.72rem;color:var(--muted);font-weight:600;padding:0 4px 0 6px}
+
+/* book layout */
+.book{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:264px minmax(0,1fr);gap:0;padding:0 16px}
+.reader{max-width:46rem;width:100%;margin:0 auto;padding:8px 0 72px;min-width:0}
+
+/* table of contents */
+.toc{position:sticky;top:var(--toolbar-h);align-self:start;height:calc(100dvh - var(--toolbar-h));overflow-y:auto;padding:28px 20px 32px 4px;scrollbar-width:thin}
+.toc h2{font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;border:none;padding:0}
+.toc ol{list-style:none;margin:0;padding:0;counter-reset:bab}
+.toc li{margin:0}
+.toc a{display:block;text-decoration:none;color:var(--muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:.88rem;font-weight:600;line-height:1.45;padding:7px 10px;border-radius:8px;border-left:2px solid transparent}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--accent);background:var(--accent-soft);border-left-color:var(--accent)}
+.toc .sub-list{list-style:none;margin:2px 0 6px;padding:0 0 0 14px;border-left:1px solid var(--line)}
+.toc .sub-list a{font-size:.82rem;font-weight:500;padding:5px 10px}
+.toc .toc-note{margin-top:22px;font-size:.82rem;color:var(--muted);line-height:1.65;border-top:1px solid var(--line);padding-top:14px}
+.scrim{display:none}
+
+/* chapters */
+section,article.phase{scroll-margin-top:calc(var(--toolbar-h) + 14px)}
+.chapter{padding-top:40px;margin-top:40px;border-top:1px solid var(--line)}
+.chapter:first-of-type{border-top:none;margin-top:8px}
+h2{font-size:clamp(1.5rem,3.4vw,1.95rem);letter-spacing:-.02em;line-height:1.25;margin:0 0 12px;padding-bottom:12px;border-bottom:2px solid var(--line)}
+.sub{color:var(--muted);margin:0 0 22px;font-size:1em}
+p{margin:0 0 1em}
+
+/* hero / cover */
+.hero{padding:36px 0 4px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--accent-soft);color:var(--accent);font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;font-size:.8rem;padding:7px 12px;border-radius:999px;border:1px solid var(--line)}
+.eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block}
+h1{font-size:clamp(2rem,5.4vw,3rem);line-height:1.12;letter-spacing:-.03em;margin:20px 0 16px;font-weight:800}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:1.08em;color:var(--muted);margin:0}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.card h3{margin:0 0 8px;font-size:.98rem}
+.card p{margin:0;color:var(--muted);font-size:.92em}
+.role{display:flex;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line);font-size:.94em}
+.role:last-child{border-bottom:none;padding-bottom:0}
+.role:first-of-type{padding-top:6px}
+.role b{font-family:"Plus Jakarta Sans",sans-serif;min-width:76px;flex:0 0 auto}
+.role span{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:30px;border-top:2px solid var(--line);border-bottom:1px solid var(--line)}
+.stat{padding:16px 14px 14px 0}
+.stat+.stat{border-left:1px solid var(--line);padding-left:16px}
+.stat strong{display:block;font-family:"Plus Jakarta Sans",sans-serif;font-size:1.55rem;line-height:1.1;letter-spacing:-.02em}
+.stat span{font-size:.82em;color:var(--muted);line-height:1.5;display:block;margin-top:4px}
+
+/* loop steps */
+.loop{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.loop-step{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.loop-step .num{font-family:"JetBrains Mono",monospace;font-size:.74rem;color:var(--accent);font-weight:600;letter-spacing:.08em}
+.loop-step h3{margin:6px 0 6px;font-size:1rem;line-height:1.35}
+.loop-step p{margin:0;color:var(--muted);font-size:.92em;line-height:1.7}
+.loop-arrow{text-align:center;color:var(--muted);font-size:.88em;margin-top:14px}
+
+/* phases (accordion chapters) */
+.phase{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.phase-head{width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:18px 18px;display:flex;gap:14px;align-items:flex-start;color:var(--ink)}
+.phase-badge{flex:0 0 auto;width:44px;height:44px;border-radius:11px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:800;font-size:1.02rem;font-family:"Plus Jakarta Sans",sans-serif}
+.phase-head-main{flex:1;min-width:0}
+.phase-head-main h3{margin:0;font-size:1.08rem;line-height:1.35}
+.phase-head-main p{margin:4px 0 0;color:var(--muted);font-size:.9em;line-height:1.6}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{font-family:"Plus Jakarta Sans",sans-serif;font-size:.74rem;font-weight:700;padding:5px 9px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+.chip.out{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.chev{flex:0 0 auto;font-size:1.15rem;color:var(--muted);transition:transform .2s;margin-top:4px;font-family:"Plus Jakarta Sans",sans-serif}
+.phase.open .chev{transform:rotate(180deg)}
+.phase-body{display:none;padding:2px 18px 20px;border-top:1px dashed var(--line)}
+.phase.open .phase-body{display:block}
+@media(min-width:700px){.phase-body{padding-left:76px}}
+.phase-body h4{margin:20px 0 10px;font-size:.8rem;letter-spacing:.07em;text-transform:uppercase;color:var(--accent)}
+.tasks{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.tasks li{display:flex;gap:11px;align-items:flex-start;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:.94em;line-height:1.65}
+.tasks li::before{content:"✓";flex:0 0 auto;width:22px;height:22px;border-radius:6px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:.78rem;font-weight:800;margin-top:3px;font-family:"Plus Jakarta Sans",sans-serif}
+.tasks li b{font-weight:600}
+.tasks li span{color:var(--muted)}
+.tip{border-left:3px solid var(--amber);background:var(--amber-soft);border-radius:0 10px 10px 0;padding:12px 15px;font-size:.93em;line-height:1.7;margin-top:16px}
+.tip b{color:var(--amber);font-family:"Plus Jakarta Sans",sans-serif}
+.deliver{font-size:.95em;color:var(--muted)}
+.deliver b{color:var(--ink)}
+
+/* code / prompt blocks — markdown fence style */
+.promptbox{background:var(--code-bg);border:1px solid var(--code-line);border-radius:10px;padding:15px 16px;margin-top:12px}
+.promptbox pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:"JetBrains Mono",monospace;font-size:.8rem;line-height:1.65;color:var(--code-ink)}
+.copy-btn{margin-top:12px;background:var(--accent);color:var(--accent-ink);border:none;border-radius:8px;padding:9px 15px;font-weight:700;cursor:pointer;font-size:.85rem;min-height:40px}
+.copy-btn:active{transform:scale(.98)}
+
+/* prompt bank */
+.prompt-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.prompt-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.prompt-card h3{margin:0 0 4px;font-size:.98rem;line-height:1.4}
+.prompt-card>p{margin:0;color:var(--muted);font-size:.88em}
+
+/* tools */
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tool{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.tool h3{margin:0 0 6px;font-size:.98rem}
+.tool .cat{font-family:"Plus Jakarta Sans",sans-serif;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.tool p{margin:6px 0 0;color:var(--muted);font-size:.92em;line-height:1.7}
+.tool ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:.92em;line-height:1.7}
+
+/* do / dont */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.panel{border-radius:12px;padding:20px;border:1px solid var(--line);background:var(--surface)}
+.panel.bad{background:var(--red-soft)}
+.panel.good{background:var(--green-soft)}
+.panel h3{margin:0 0 12px;font-size:1rem}
+.panel ul{margin:0;padding-left:19px;display:grid;gap:9px;font-size:.93em;line-height:1.7}
+.panel li b,.panel li span:first-child{font-weight:600}
+
+/* brief template */
+.brief{background:var(--surface);border:1px dashed var(--accent);border-radius:12px;padding:20px}
+.brief pre{white-space:pre-wrap;word-break:break-word;font-family:"JetBrains Mono",monospace;font-size:.8rem;line-height:1.7;margin:0;color:var(--ink)}
+
+/* final checklist — markdown task list */
+.final{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px}
+.final h2{border-bottom-color:var(--line)}
+.final-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 26px;list-style:none;margin:0;padding:0}
+.final-grid li{display:flex;gap:11px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:.95em;line-height:1.6;align-items:flex-start}
+.final-grid li::before{content:"";flex:0 0 auto;width:19px;height:19px;border:2px solid var(--muted);border-radius:5px;margin-top:4px;opacity:.65}
+
+/* chapter prev / next */
+.chapter-nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:48px}
+.chapter-nav a{display:block;text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px 17px;color:var(--ink)}
+.chapter-nav a:hover{border-color:var(--accent)}
+.chapter-nav .dir{font-family:"Plus Jakarta Sans",sans-serif;font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
+.chapter-nav .ttl{font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;font-size:.95rem;line-height:1.4;display:block}
+.chapter-nav a.next{text-align:right}
+.chapter-nav a.disabled{opacity:.4;pointer-events:none}
+.chapter-nav a:only-child{grid-column:1/-1}
+
+footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:.9em;line-height:1.75}
+footer strong{color:var(--ink);font-family:"Plus Jakarta Sans",sans-serif}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:999px;font-weight:700;font-size:.88rem;z-index:90;transition:transform .25s;box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:"Plus Jakarta Sans",sans-serif}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ---------- responsive ---------- */
+@media(max-width:1023px){
+  .book{grid-template-columns:1fr;padding:0 20px}
+  .toc-btn{display:inline-flex}
+  .toolbar .book-mark{display:none}
+  .toc{position:fixed;top:0;left:0;z-index:85;width:min(320px,86vw);height:100dvh;background:var(--surface);border-right:1px solid var(--line);padding:22px 18px 32px;transform:translateX(-105%);transition:transform .28s ease;box-shadow:0 0 40px rgba(0,0,0,.18)}
+  body.toc-open .toc{transform:translateX(0)}
+  .scrim{display:block;position:fixed;inset:0;z-index:84;background:rgba(10,15,13,.45);opacity:0;pointer-events:none;transition:opacity .28s}
+  body.toc-open .scrim{opacity:1;pointer-events:auto}
+  .toc .toc-close{display:inline-flex}
+}
+.toc .toc-close{display:none;margin-left:auto;background:var(--surface-2);border:1px solid var(--line);color:var(--ink);border-radius:8px;width:36px;height:36px;min-height:36px;align-items:center;justify-content:center;cursor:pointer;font-size:1rem}
+.toc-head{display:flex;align-items:center}
+@media(max-width:760px){
+  .hero-grid{grid-template-columns:1fr}
+  .prompt-grid{grid-template-columns:1fr}
+  .two{grid-template-columns:1fr}
+  .tools{grid-template-columns:1fr}
+  .chapter-nav{grid-template-columns:1fr}
+  .chapter-nav a.next{text-align:left}
+}
+@media(max-width:640px){
+  .final-grid{grid-template-columns:1fr}
+  .loop{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr 1fr}
+  .stat{padding:13px 8px 12px 0}
+  .stat+.stat{padding-left:10px}
+  .stat strong{font-size:1.2rem}
+  .stat span{font-size:.76em}
+  .book{padding:0 16px}
+  .reader{padding-bottom:56px}
+  .phase-head{padding:16px 14px}
+  .phase-body{padding:2px 14px 18px}
+  .final{padding:19px}
+  .brief{padding:16px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .chev,.toast,.toc,.scrim{transition:none}
+}
+@media print{
+  .toolbar,.toc,.progress,.toast,.chapter-nav,.copy-btn,.scrim{display:none!important}
+  .book{grid-template-columns:1fr}
+  .phase-body{display:block}
+  body{font-size:11.5pt}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progressBar"></div>
+
+<!-- READING TOOLBAR -->
+<div class="toolbar">
+  <div class="toolbar-in">
+    <button class="toc-btn" id="tocBtn" aria-label="Buka daftar isi"><span class="bars">☰</span> Daftar Isi</button>
+    <span class="book-mark" id="bookMark">Pendahuluan</span>
+    <span class="spacer"></span>
+    <span class="read-pct" id="readPct">0%</span>
+    <div class="font-ctl" role="group" aria-label="Ukuran huruf">
+      <span class="f-label">Huruf</span>
+      <button class="f-sm" id="fontDown" aria-label="Perkecil huruf">A</button>
+      <button class="f-md" id="fontReset" aria-label="Ukuran huruf standar">A</button>
+      <button class="f-lg" id="fontUp" aria-label="Perbesar huruf">A</button>
+    </div>
+  </div>
+</div>
+<div class="scrim" id="scrim"></div>
+
+<div class="book">
+
+  <!-- TABLE OF CONTENTS -->
+  <aside class="toc" id="toc" aria-label="Daftar isi">
+    <div class="toc-head"><h2>Daftar Isi</h2><button class="toc-close" id="tocClose" aria-label="Tutup daftar isi">✕</button></div>
+    <ol>
+      <li><a href="#top" data-toc>Pendahuluan</a></li>
+      <li><a href="#cara-kerja" data-toc>1 · Cara Kerja AI Agentic</a></li>
+      <li><a href="#workflow" data-toc>2 · Workflow: 7 Fase + Persiapan</a>
+        <ol class="sub-list">
+          <li><a href="#fase-0" data-toc>Fase 0 · Persiapan</a></li>
+          <li><a href="#fase-1" data-toc>Fase 1 · Ide &amp; Perencanaan</a></li>
+          <li><a href="#fase-2" data-toc>Fase 2 · Desain &amp; Struktur</a></li>
+          <li><a href="#fase-3" data-toc>Fase 3 · Setup Project</a></li>
+          <li><a href="#fase-4" data-toc>Fase 4 · Build</a></li>
+          <li><a href="#fase-5" data-toc>Fase 5 · Testing &amp; Debugging</a></li>
+          <li><a href="#fase-6" data-toc>Fase 6 · Deploy</a></li>
+          <li><a href="#fase-7" data-toc>Fase 7 · Maintenance</a></li>
+        </ol>
+      </li>
+      <li><a href="#prompt-bank" data-toc>3 · Bank Prompt Serbaguna</a></li>
+      <li><a href="#tools" data-toc>4 · Peta Alat</a></li>
+      <li><a href="#kebiasaan" data-toc>5 · Kebiasaan yang Membedakan</a></li>
+      <li><a href="#template" data-toc>6 · Template Brief</a></li>
+      <li><a href="#final" data-toc>7 · Checklist Terakhir</a></li>
+    </ol>
+    <p class="toc-note">Cara membaca buku ini: jangan dibaca sekali habis. Buka bab yang sedang kamu kerjakan, selesaikan daftar tugasnya, baru lanjut ke bab berikutnya.</p>
+  </aside>
+
+  <!-- READER -->
+  <main class="reader" id="top">
+
+  <!-- HERO -->
+  <header class="hero">
+    <span class="eyebrow"><i></i> Panduan pemula · Tanpa harus jago coding dulu</span>
+    <h1>Bikin website dari nol sampai <em>online</em>, dibantu AI agentic</h1>
+    <p class="lede">AI agentic itu AI yang tidak cuma menjawab chat — dia bisa merencanakan, menulis kode, menjalankan perintah, membaca error, dan memperbaikinya sendiri. Tugasmu bukan mengetik kode baris demi baris, tapi memberi arahan yang jelas, memeriksa hasilnya, dan memutuskan. Ini peta jalannya, fase demi fase.</p>
+
+    <div class="hero-grid">
+      <div class="card">
+        <h3>Pembagian peran — ini kuncinya</h3>
+        <div class="role"><b>Kamu</b><span>Pemilik ide &amp; pengambil keputusan. Menulis brief, memilih, menguji hasil seperti pengguna asli, memberi feedback.</span></div>
+        <div class="role"><b>AI Agent</b><span>Eksekutor. Menyusun rencana, menulis &amp; mengubah kode, menjalankan test, membaca error, dan mengusulkan perbaikan.</span></div>
+        <div class="role"><b>Browser</b><span>Tempat membuktikan. Website belum “jadi” sebelum kamu sendiri membukanya dan mencobanya di HP dan laptop.</span></div>
+      </div>
+      <div class="card">
+        <h3>Contoh proyek pertama yang ideal</h3>
+        <p>Pilih yang kecil dan selesai, bukan yang besar dan mangkrak:</p>
+        <p style="margin-top:10px">✅ Website profil / portofolio<br>✅ Landing page produk atau jasa<br>✅ Katalog sederhana (menu, daftar layanan)<br>✅ Tools internal kecil: kalkulator, form, generator teks</p>
+        <p style="margin-top:10px">Hindari dulu: login + pembayaran + database besar sekaligus. Itu proyek kedua atau ketiga.</p>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><strong>7</strong><span>fase dari ide sampai maintenance</span></div>
+      <div class="stat"><strong>1–3 hari</strong><span>estimasi proyek pertama yang sederhana, dikerjakan santai</span></div>
+      <div class="stat"><strong>4 langkah</strong><span>loop kerja agent yang berulang di semua fase</span></div>
+    </div>
+  </header>
+
+  <!-- CARA KERJA -->
+  <section id="cara-kerja" class="chapter">
+    <h2>Pertama, pahami cara kerja AI agentic</h2>
+    <p class="sub">Berbeda dengan chatbot biasa yang sekali jawab selesai, agent bekerja dalam putaran (loop) sampai tugas tuntas. Kamu akan melihat loop ini berulang terus — dan pekerjaanmu adalah mengarahkannya di setiap putaran.</p>
+    <div class="loop">
+      <div class="loop-step"><div class="num">LANGKAH 01</div><h3>Plan — Merencanakan</h3><p>Agent memecah permintaanmu jadi langkah-langkah kecil. Baca rencananya dulu sebelum dia mulai — di sinilah salah arah paling murah dicegah.</p></div>
+      <div class="loop-step"><div class="num">LANGKAH 02</div><h3>Act — Mengerjakan</h3><p>Agent menulis/mengubah file, menjalankan perintah di terminal, dan membangun bagian yang direncanakan.</p></div>
+      <div class="loop-step"><div class="num">LANGKAH 03</div><h3>Observe — Mengamati</h3><p>Agent membaca hasil: output terminal, error, hasil test. Kamu ikut mengamati dengan membuka hasilnya di browser.</p></div>
+      <div class="loop-step"><div class="num">LANGKAH 04</div><h3>Iterate — Memperbaiki</h3><p>Kalau ada yang kurang, agent memperbaiki berdasarkan temuan — lalu loop berputar lagi sampai hasilnya benar-benar sesuai maumu.</p></div>
+    </div>
+    <p class="loop-arrow">↻ Loop ini berputar untuk setiap fitur: satu fitur selesai &amp; terverifikasi, baru lanjut ke fitur berikutnya.</p>
+  </section>
+
+  <!-- PHASES -->
+  <section id="workflow" class="chapter">
+    <h2>Workflow lengkap: 7 fase + persiapan</h2>
+    <p class="sub">Ketuk setiap fase untuk membuka daftar tugasnya. Kerjakan berurutan — jangan lompat ke deploy sebelum testing, jangan coding sebelum brief-nya jelas. Di tiap fase ada contoh prompt yang bisa langsung kamu salin.</p>
+
+    <!-- FASE 0 -->
+    <article class="phase open" id="fase-0">
+      <button class="phase-head" aria-expanded="true"><span class="phase-badge">0</span><span class="phase-head-main"><h3>Persiapan — Siapkan alat &amp; akun</h3><p>Sekali setup, dipakai untuk semua proyek berikutnya.</p><span class="meta"><span class="chip">⏱ 30–60 menit</span><span class="chip out">Output: laptop siap kerja</span></span></span><span class="chev">⌄</span></button>
+      <div class="phase-body">
+        <h4>Daftar tugas</h4>
+        <ul class="tasks">
+          <li><div><b>Install editor + AI agent.</b> <span>Pilih satu dulu: Cursor, Windsurf, atau ekstensi AI di VS Code — atau agent berbasis terminal seperti Claude Code / Codex kalau sudah nyaman dengan terminal.</span></div></li>
+          <li><div><b>Install pondasi:</b> <span>Node.js (versi LTS), Git, dan browser Chrome. Minta agent membantumu memeriksa semuanya sudah terpasang.</span></div></li>
+          <li><div><b>Buat akun GitHub.</b> <span>Untuk menyimpan kode (version control) — ini juga “tombol undo raksasa” dan tempat backup proyekmu.</span></div></li>
+          <li><div><b>Buat akun platform deploy.</b> <span>Vercel, Netlify, atau Cloudflare Pages — ketiganya punya paket gratis untuk mulai. Hubungkan dengan akun GitHub.</span></div></li>
+          <li><div><b>Buat folder khusus proyek</b> <span>di laptop, satu folder per proyek. Jangan campur dengan file kerja lain.</span></div></li>
+          <li><div><b>Latihan 10 menit:</b> <span>minta agent membuat halaman HTML sederhana “Halo, nama saya …” lalu buka di browser. Tujuannya merasakan loop Plan → Act → Observe pertamamu.</span></div></li>
+        </ul>
+        <div class="tip"><b>Tips:</b> Catat semua akun &amp; password di password manager, bukan di sticky notes. Kamu akan sering berpindah antar layanan ini.</div>
+        <h4>Contoh prompt</h4>
+        <div class="promptbox"><pre data-copy>Saya pemula. Tolong pandu saya memeriksa apakah Node.js, Git, dan npm sudah terpasang di komputer ini. Jalankan perintah pemeriksaannya satu per satu, jelaskan arti hasilnya dengan bahasa sederhana, dan beri tahu langkah instalasi jika ada yang belum terpasang. Jangan mengubah apa pun tanpa izin saya.</pre><button class="copy-btn">Salin prompt</button></div>
+      </div>
+    </article>
+
+    <!-- FASE 1 -->
+    <article class="phase" id="fase-1">
+      <button class="phase-head" aria-expanded="false"><span class="phase-badge">1</span><span class="phase-head-main"><h3>Ide &amp; Perencanaan — Tulis brief sebelum kode</h3><p>Fase paling menentukan. Kode yang salah arah hampir selalu lahir dari brief yang kabur.</p><span class="meta"><span class="chip">⏱ 1–2 jam</span><span class="chip out">Output: brief / PRD 1 halaman</span></span></span><span class="chev">⌄</span></button>
+      <div class="phase-body">
+        <h4>Daftar tugas</h4>
+        <ul class="tasks">
+          <li><div><b>Jawab 5 pertanyaan dasar:</b> <span>Website ini untuk siapa? Masalah apa yang diselesaikan? Pengunjung harus bisa melakukan apa? Halaman apa saja yang dibutuhkan? Seperti apa tampilan yang diinginkan (beri 2–3 contoh website referensi)?</span></div></li>
+          <li><div><b>Minta AI mewawancaraimu.</b> <span>Biarkan agent mengajukan pertanyaan klarifikasi sebelum membuat apa pun — jawab dengan jujur dan spesifik.</span></div></li>
+          <li><div><b>Susun daftar fitur, pisahkan dua tumpukan:</b> <span>“Wajib ada di versi pertama” vs “Nanti saja”. Versi pertama harus kecil.</span></div></li>
+          <li><div><b>Minta agent menuliskan PRD / brief</b> <span>(Product Requirements Document) dalam file <span class="mono">BRIEF.md</span>: tujuan, pengguna, daftar halaman, fitur, dan batasan. Baca dan koreksi sampai kamu setuju 100%.</span></div></li>
+          <li><div><b>Tentukan kriteria “selesai”.</b> <span>Misalnya: “Pengunjung bisa melihat katalog, klik tombol WhatsApp, dan halaman tampil rapi di HP.” Tanpa ini, kamu tidak tahu kapan harus berhenti mengutak-atik.</span></div></li>
+        </ul>
+        <div class="tip"><b>Tips:</b> Simpan <span class="mono">BRIEF.md</span> di folder proyek. Setiap sesi baru dengan agent, minta dia membaca file ini dulu — agent tidak punya ingatan antar-sesi, file inilah ingatannya.</div>
+        <h4>Contoh prompt</h4>
+        <div class="promptbox"><pre data-copy>Saya ingin membuat website katalog untuk usaha [jelaskan usahamu]. Sebelum menulis kode apa pun, wawancara saya dulu: ajukan maksimal 8 pertanyaan untuk memperjelas target pengunjung, halaman yang dibutuhkan, fitur wajib, dan gaya tampilan. Setelah saya jawab, tuliskan hasilnya menjadi file BRIEF.md yang rapi berisi: tujuan, target pengguna, daftar halaman, fitur versi pertama, fitur yang ditunda, dan kriteria selesai.</pre><button class="copy-btn">Salin prompt</button></div>
+      </div>
+    </article>
+
+    <!-- FASE 2 -->
+    <article class="phase" id="fase-2">
+      <button class="phase-head" aria-expanded="false"><span class="phase-badge">2</span><span class="phase-head-main"><h3>Desain &amp; Struktur — Sketsa sebelum membangun</h3><p>Tentukan isi dan tampilan per halaman, supaya agent tidak menebak-nebak.</p><span class="meta"><span class="chip">⏱ 1–2 jam</span><span class="chip out">Output: sitemap + sketsa tiap halaman</span></span></span><span class="chev">⌄</span></button>
+      <div class="phase-body">
+        <h4>Daftar tugas</h4>
+        <ul class="tasks">
+          <li><div><b>Buat sitemap sederhana:</b> <span>daftar halaman dan isinya. Contoh: Beranda (hero, keunggulan, testimoni, CTA) · Katalog · Tentang · Kontak.</span></div></li>
+          <li><div><b>Siapkan konten asli:</b> <span>teks, logo, foto, nomor kontak, alamat. Konten “lorem ipsum” boleh untuk awal, tapi catat apa saja yang harus diganti sebelum online.</span></div></li>
+          <li><div><b>Pilih arah visual:</b> <span>2–3 warna utama, satu font, gaya (formal / santai / playful). Tunjukkan website referensi ke agent dan sebutkan bagian mana yang kamu suka — bukan menyalin mentah-mentah.</span></div></li>
+          <li><div><b>Minta agent membuat wireframe / versi kasar</b> <span>dari halaman utama dulu. Periksa alurnya sebagai pengunjung: apakah jelas harus klik apa?</span></div></li>
+          <li><div><b>Putuskan kebutuhan teknis:</b> <span>apakah butuh form, database, login, atau cukup halaman statis? Untuk versi pertama, jawaban “statis” biasanya yang paling cepat online.</span></div></li>
+        </ul>
+        <h4>Contoh prompt</h4>
+        <div class="promptbox"><pre data-copy>Berdasarkan BRIEF.md, buatkan dulu wireframe teks untuk halaman Beranda: susunan section dari atas ke bawah, isi singkat tiap section, dan tombol apa saja yang ada. Jangan buat kode final dulu. Jelaskan juga alasan susunan itu dari sudut pandang pengunjung yang baru pertama kali datang.</pre><button class="copy-btn">Salin prompt</button></div>
+      </div>
+    </article>
+
+    <!-- FASE 3 -->
+    <article class="phase" id="fase-3">
+      <button class="phase-head" aria-expanded="false"><span class="phase-badge">3</span><span class="phase-head-main"><h3>Setup Project — Bangun pondasi yang rapi</h3><p>Agent menyiapkan kerangka proyek, kamu memastikan strukturnya masuk akal.</p><span class="meta"><span class="chip">⏱ 30–60 menit</span><span class="chip out">Output: proyek jalan di localhost</span></span></span><span class="chev">⌄</span></button>
+      <div class="phase-body">
+        <h4>Daftar tugas</h4>
+        <ul class="tasks">
+          <li><div><b>Minta agent mengusulkan stack</b> <span>(teknologi) beserta alasannya, dalam bahasa sederhana. Untuk website sederhana, framework modern seperti Next.js / Astro atau bahkan HTML statis sudah cukup — yang penting agent menjelaskannya dan kamu paham konsekuensinya.</span></div></li>
+          <li><div><b>Agent membuat kerangka proyek</b> <span>(scaffolding) dan menginstall dependency yang dibutuhkan.</span></div></li>
+          <li><div><b>Jalankan proyek secara lokal</b> <span>dan buka di browser (biasanya di alamat <span class="mono">localhost</span>). Ini “dapur”-mu — yang online nanti adalah hasil akhirnya.</span></div></li>
+          <li><div><b>Inisialisasi Git &amp; commit pertama,</b> <span>lalu hubungkan ke repository GitHub. Commit = menyimpan titik aman yang bisa kamu kembalikan kapan pun.</span></div></li>
+          <li><div><b>Minta agent menulis <span class="mono">README.md</span>:</b> <span>cara menjalankan proyek, struktur folder, dan perintah penting. Ini penyelamat saat kamu kembali ke proyek setelah libur panjang.</span></div></li>
+        </ul>
+        <div class="tip"><b>Tips:</b> Biasakan commit setiap selesai satu bagian yang bekerja, dengan pesan yang jelas (“tambah halaman katalog”). Commit kecil-kecil = mudah melacak dan mudah mundur kalau ada yang rusak.</div>
+        <h4>Contoh prompt</h4>
+        <div class="promptbox"><pre data-copy>Baca BRIEF.md. Usulkan stack teknologi paling sederhana yang cocok untuk website ini, jelaskan pro-kontranya dalam bahasa pemula. Jika saya setuju, buat kerangka proyeknya, jalankan secara lokal, dan tunjukkan cara saya membukanya di browser. Setelah itu, inisialisasi Git, buat commit pertama, dan tuliskan README.md berisi cara menjalankan proyek ini.</pre><button class="copy-btn">Salin prompt</button></div>
+      </div>
+    </article>
+
+    <!-- FASE 4 -->
+    <article class="phase" id="fase-4">
+      <button class="phase-head" aria-expanded="false"><span class="phase-badge">4</span><span class="phase-head-main"><h3>Build — Bangun fitur satu per satu bersama agent</h3><p>Fase terpanjang, dan fase di mana disiplin “kecil-kecil tapi selesai” paling terasa bedanya.</p><span class="meta"><span class="chip">⏱ 50% dari total waktu</span><span class="chip out">Output: semua fitur versi pertama bekerja</span></span></span><span class="chev">⌄</span></button>
+      <div class="phase-body">
+        <h4>Daftar tugas</h4>
+        <ul class="tasks">
+          <li><div><b>Kerjakan per fitur, bukan sekaligus.</b> <span>Urutan yang enak: struktur &amp; layout → halaman utama → halaman lain → detail &amp; animasi. Satu permintaan = satu hal yang bisa kamu periksa.</span></div></li>
+          <li><div><b>Selalu minta rencana dulu untuk tugas besar.</b> <span>“Buatkan rencananya dulu, jangan langsung coding.” Baca, koreksi, baru izinkan eksekusi.</span></div></li>
+          <li><div><b>Periksa di browser setiap selesai satu fitur.</b> <span>Klik semua tombol, coba di tampilan HP (mode responsif di browser), baca teksnya. Jangan menumpuk 5 fitur tanpa memeriksa.</span></div></li>
+          <li><div><b>Beri feedback yang spesifik.</b> <span>Bukan “kurang bagus”, tapi: “Judul terlalu besar di HP, tombol WhatsApp harus selalu terlihat di bawah, warna hijau diganti yang lebih gelap.”</span></div></li>
+          <li><div><b>Commit setelah tiap fitur beres.</b> <span>Kalau eksperimen berikutnya merusak, kamu bisa kembali ke titik ini dalam hitungan detik.</span></div></li>
+          <li><div><b>Isi konten asli</b> <span>segera setelah struktur jadi — teks dan foto asli sering mengubah kebutuhan layout.</span></div></li>
+          <li><div><b>Kalau agent “ngeyel” atau berputar-putar:</b> <span>berhenti, minta dia menjelaskan akar masalahnya, atau mulai sesi baru dengan konteks BRIEF.md + ringkasan masalah. Sesi baru sering lebih cepat daripada memaksa sesi yang sudah buntu.</span></div></li>
+        </ul>
+        <div class="tip"><b>Aturan emas:</b> Jangan pernah bilang “buatkan saya website X” dalam satu prompt raksasa. Pecah jadi: halaman → section → komponen. Hasilnya jauh lebih rapi dan mudah diperbaiki.</div>
+        <h4>Contoh prompt</h4>
+        <div class="promptbox"><pre data-copy>Sekarang kita kerjakan SATU fitur saja: section katalog di halaman Beranda, sesuai BRIEF.md. Buatkan rencananya dulu dalam 3-5 langkah. Setelah saya setujui, kerjakan, lalu berhenti dan beri tahu saya cara memeriksanya di browser. Jangan mengerjakan fitur lain dulu.</pre><button class="copy-btn">Salin prompt</button></div>
+        <h4>Contoh prompt memberi feedback</h4>
+        <div class="promptbox"><pre data-copy>Saya sudah memeriksa di browser. Yang perlu diubah:
+1. Di tampilan HP, judul hero kepotong — perkecil ukuran font-nya.
+2. Tombol "Chat WhatsApp" harus selalu menempel di kanan bawah.
+3. Jarak antar kartu katalog terlalu rapat.
+Ubah hanya tiga hal itu, jangan ubah bagian lain. Setelah selesai, jelaskan file apa saja yang kamu ubah.</pre><button class="copy-btn">Salin prompt</button></div>
+      </div>
+    </article>
+
+    <!-- FASE 5 -->
+    <article class="phase" id="fase-5">
+      <button class="phase-head" aria-expanded="false"><span class="phase-badge">5</span><span class="phase-head-main"><h3>Testing &amp; Debugging — Buktikan, jangan berasumsi</h3><p>“Kata agent sudah beres” bukan bukti. Bukti adalah kamu mencobanya sendiri.</p><span class="meta"><span class="chip">⏱ 1–3 jam</span><span class="chip out">Output: daftar bug kosong / terdokumentasi</span></span></span><span class="chev">⌄</span></button>
+      <div class="phase-body">
+        <h4>Daftar tugas</h4>
+        <ul class="tasks">
+          <li><div><b>Uji seperti pengunjung asli:</b> <span>buka setiap halaman, klik setiap link &amp; tombol, isi setiap form sampai selesai. Catat semua yang janggal.</span></div></li>
+          <li><div><b>Uji di HP beneran,</b> <span>bukan cuma mode responsif. Periksa: teks terbaca, tombol mudah diketuk, tidak ada yang bergeser ke samping.</span></div></li>
+          <li><div><b>Uji kasus aneh:</b> <span>form dikosongkan lalu dikirim, nama sangat panjang, koneksi lambat, gambar gagal dimuat. Website yang baik tetap sopan menghadapi ini.</span></div></li>
+          <li><div><b>Laporkan bug dengan lengkap:</b> <span>di halaman apa, langkahnya bagaimana, yang terjadi apa, seharusnya apa — plus screenshot kalau bisa. Minta agent menjelaskan penyebabnya sebelum memperbaiki.</span></div></li>
+          <li><div><b>Minta agent menjalankan pemeriksaan otomatis</b> <span>yang tersedia di proyek (test, lint, build) dan memperbaiki semua error sampai bersih.</span></div></li>
+          <li><div><b>Uji kecepatan kasar:</b> <span>halaman utama harus terasa ringan dibuka. Kalau berat, minta agent mengecilkan gambar dan memeriksa penyebabnya.</span></div></li>
+        </ul>
+        <h4>Contoh prompt melaporkan bug</h4>
+        <div class="promptbox"><pre data-copy>Ada bug. Di halaman Kontak, saat form dikirim dalam keadaan kosong, muncul pesan error berbahasa Inggris dan halamannya jadi kosong. Seharusnya: muncul peringatan berbahasa Indonesia di bawah kolom yang kosong, tanpa pindah halaman. Jelaskan dulu dugaan penyebabnya, lalu perbaiki, lalu tunjukkan cara saya memverifikasinya.</pre><button class="copy-btn">Salin prompt</button></div>
+      </div>
+    </article>
+
+    <!-- FASE 6 -->
+    <article class="phase" id="fase-6">
+      <button class="phase-head" aria-expanded="false"><span class="phase-badge">6</span><span class="phase-head-main"><h3>Deploy — Rilis ke production sampai bisa diakses publik</h3><p>Momen websitemu punya alamat asli dan bisa dibuka siapa saja.</p><span class="meta"><span class="chip">⏱ 30–90 menit</span><span class="chip out">Output: URL production yang live</span></span></span><span class="chev">⌄</span></button>
+      <div class="phase-body">
+        <h4>Daftar tugas</h4>
+        <ul class="tasks">
+          <li><div><b>Pastikan semua perubahan sudah di-commit &amp; ter-push ke GitHub.</b> <span>Platform deploy akan mengambil kode dari sana.</span></div></li>
+          <li><div><b>Hubungkan repository ke platform deploy</b> <span>(Vercel / Netlify / Cloudflare Pages), ikuti panduan agent langkah demi langkah. Build pertama biasanya otomatis.</span></div></li>
+          <li><div><b>Atur environment variable</b> <span>(kunci API, token, dsb.) di dashboard platform — jangan pernah menulis kunci rahasia langsung di kode atau di GitHub.</span></div></li>
+          <li><div><b>Buka URL production dan uji ulang semuanya</b> <span>di sana — versi online bisa berperilaku beda dari localhost. Klik semua halaman, coba form-nya.</span></div></li>
+          <li><div><b>(Opsional) Pasang domain sendiri:</b> <span>beli domain, hubungkan lewat pengaturan DNS di platform deploy, tunggu HTTPS aktif. Minta agent memandu arti tiap langkahnya.</span></div></li>
+          <li><div><b>Bagikan link-nya</b> <span>ke 2–3 orang dan minta mereka mencoba tanpa dibimbing. Catatan mereka adalah bahan Fase 7.</span></div></li>
+        </ul>
+        <div class="tip"><b>Konsep penting:</b> Setelah terhubung ke GitHub, biasanya setiap kamu push perubahan, website online ikut ter-update otomatis (continuous deployment). Jadi “deploy ulang” cukup dengan commit + push.</div>
+        <h4>Contoh prompt</h4>
+        <div class="promptbox"><pre data-copy>Saya mau deploy proyek ini ke [Vercel/Netlify/Cloudflare Pages]. Pandu saya langkah demi langkah dari menghubungkan repository GitHub sampai websitenya online. Di setiap langkah, jelaskan apa yang harus saya klik dan apa yang harus saya periksa. Ingatkan saya jika ada environment variable yang harus diatur, dan jangan pernah meminta saya menempelkan kunci rahasia di chat ini.</pre><button class="copy-btn">Salin prompt</button></div>
+      </div>
+    </article>
+
+    <!-- FASE 7 -->
+    <article class="phase" id="fase-7">
+      <button class="phase-head" aria-expanded="false"><span class="phase-badge">7</span><span class="phase-head-main"><h3>Maintenance &amp; Iterasi — Website hidup, bukan proyek sekali jadi</h3><p>Setelah online, siklusnya kembali ke Fase 1 — dalam skala lebih kecil.</p><span class="meta"><span class="chip">⏱ Berkelanjutan</span><span class="chip out">Output: website yang terus membaik</span></span></span><span class="chev">⌄</span></button>
+      <div class="phase-body">
+        <h4>Daftar tugas</h4>
+        <ul class="tasks">
+          <li><div><b>Kumpulkan feedback pengguna</b> <span>di satu catatan. Kelompokkan: bug, kebingungan, permintaan fitur.</span></div></li>
+          <li><div><b>Kerjakan perbaikan dalam batch kecil:</b> <span>satu sesi = satu topik, selalu mulai dengan membaca BRIEF.md, akhiri dengan commit + verifikasi di production.</span></div></li>
+          <li><div><b>Update BRIEF.md</b> <span>setiap ada perubahan arah — supaya sesi agent berikutnya tidak bekerja dengan peta lama.</span></div></li>
+          <li><div><b>Pantau hal dasar:</b> <span>website masih online, form masih masuk, tidak ada error baru setelah update.</span></div></li>
+          <li><div><b>Baru naik level:</b> <span>setelah versi statis stabil, pertimbangkan fitur tundaaanmu satu per satu — blog, login, pembayaran — masing-masing lewat mini-workflow yang sama: brief → build → test → deploy.</span></div></li>
+        </ul>
+        <p class="deliver"><b>Ingat:</b> kamu tidak perlu menghafal sintaks. Yang perlu kamu latih adalah tiga keterampilan: menjelaskan maumu dengan jelas, memeriksa hasil dengan kritis, dan memecah pekerjaan jadi langkah kecil. Sisanya adalah pekerjaan agent.</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- PROMPT BANK -->
+  <section id="prompt-bank" class="chapter">
+    <h2>Bank prompt serbaguna</h2>
+    <p class="sub">Prompt-prompt pendek ini berguna di hampir semua proyek dan semua fase. Salin, sesuaikan bagian dalam [kurung siku].</p>
+    <div class="prompt-grid">
+      <div class="prompt-card"><h3>🧭 Memulai sesi baru</h3><p>Karena agent tidak ingat sesi kemarin.</p><div class="promptbox"><pre data-copy>Baca BRIEF.md dan README.md dulu. Ringkas pemahamanmu tentang proyek ini dan status terakhirnya, lalu tanyakan apa yang mau saya kerjakan hari ini. Jangan mengubah file apa pun dulu.</pre><button class="copy-btn">Salin prompt</button></div></div>
+      <div class="prompt-card"><h3>🔍 Meminta penjelasan</h3><p>Agar kamu belajar, bukan cuma menerima hasil.</p><div class="promptbox"><pre data-copy>Jelaskan bagian ini seperti saya pemula: apa fungsinya, kenapa dibuat seperti itu, dan apa risikonya kalau diubah. Gunakan analogi sehari-hari, hindari jargon tanpa penjelasan.</pre><button class="copy-btn">Salin prompt</button></div></div>
+      <div class="prompt-card"><h3>🛑 Menghentikan agent yang buntu</h3><p>Saat perbaikan berputar-putar tanpa hasil.</p><div class="promptbox"><pre data-copy>Berhenti dulu. Jangan ubah kode lagi. Jelaskan: apa sebenarnya akar masalahnya, apa saja yang sudah kamu coba dan kenapa gagal, dan apa 2-3 pendekatan lain yang mungkin. Saya akan pilih pendekatannya.</pre><button class="copy-btn">Salin prompt</button></div></div>
+      <div class="prompt-card"><h3>✅ Meminta verifikasi</h3><p>Menutup setiap tugas dengan bukti.</p><div class="promptbox"><pre data-copy>Sebelum bilang selesai: jalankan build/test yang ada, lalu buat daftar periksa berisi langkah konkret yang bisa saya lakukan sendiri di browser untuk membuktikan fitur ini bekerja. Sebutkan juga bagian yang belum kamu uji.</pre><button class="copy-btn">Salin prompt</button></div></div>
+    </div>
+  </section>
+
+  <!-- TOOLS -->
+  <section id="tools" class="chapter">
+    <h2>Peta alat yang akan kamu temui</h2>
+    <p class="sub">Tidak perlu menguasai semuanya di hari pertama. Kenali saja perannya — detailnya bisa ditanyakan ke agent saat kamu membutuhkannya.</p>
+    <div class="tools">
+      <div class="tool"><div class="cat">Tempat bekerja</div><h3>AI Coding Agent</h3><p>Partner utamamu. Contoh kategori produk: Cursor, Windsurf, VS Code + ekstensi AI, Claude Code, Codex.</p><ul><li>Menulis &amp; mengubah kode</li><li>Menjalankan perintah terminal</li><li>Membaca &amp; memperbaiki error</li></ul></div>
+      <div class="tool"><div class="cat">Penyimpanan kode</div><h3>Git + GitHub</h3><p>Mesin waktu untuk kodemu.</p><ul><li>Commit = titik simpan aman</li><li>Push = backup ke cloud</li><li>Jembatan menuju deploy otomatis</li></ul></div>
+      <div class="tool"><div class="cat">Mesin di balik layar</div><h3>Node.js &amp; npm</h3><p>Menjalankan proyek web modern di laptopmu dan menginstall paket bantuan (dependency).</p><ul><li><span class="mono">npm run dev</span> = mode latihan lokal</li><li><span class="mono">npm run build</span> = paket final</li></ul></div>
+      <div class="tool"><div class="cat">Tempat online</div><h3>Platform Deploy</h3><p>Vercel, Netlify, atau Cloudflare Pages — mengubah repository GitHub menjadi website ber-URL publik, umumnya dengan paket gratis untuk memulai.</p><ul><li>Deploy otomatis tiap push</li><li>HTTPS aktif secara bawaan</li><li>Bisa pasang domain sendiri</li></ul></div>
+      <div class="tool"><div class="cat">Pembuktian</div><h3>Browser + DevTools</h3><p>Tempatmu menguji sebagai pengguna: mode tampilan HP, memeriksa error di console, dan menguji kecepatan muat.</p><ul><li>Coba di Chrome &amp; HP asli</li><li>Screenshot = bukti saat lapor bug</li></ul></div>
+      <div class="tool"><div class="cat">Ingatan proyek</div><h3>File Markdown (.md)</h3><p>BRIEF.md dan README.md — dokumen teks biasa yang dibaca agent di awal sesi agar konteks proyek tidak hilang.</p><ul><li>Tulis singkat &amp; spesifik</li><li>Update tiap ada perubahan arah</li></ul></div>
+    </div>
+  </section>
+
+  <!-- DO / DONT -->
+  <section id="kebiasaan" class="chapter">
+    <h2>Kebiasaan yang membedakan hasil bagus dan hasil berantakan</h2>
+    <p class="sub">Teknologinya sama untuk semua orang. Yang membuat hasil akhirnya beda adalah cara kamu mengarahkan agent-nya.</p>
+    <div class="two">
+      <div class="panel bad"><h3>✕ Yang sering bikin pemula frustrasi</h3><ul>
+        <li><span>Satu prompt raksasa:</span> “buatkan website lengkap dengan semua fitur” — hasilnya generik dan susah diperbaiki.</li>
+        <li><span>Percaya tanpa memeriksa:</span> agent bilang selesai, langsung lanjut — bug menumpuk diam-diam.</li>
+        <li><span>Tidak pernah commit:</span> sekali rusak, tidak ada jalan pulang.</li>
+        <li><span>Feedback kabur:</span> “kurang bagus, perbaiki ya” — agent menebak, kamu kecewa, berputar terus.</li>
+        <li><span>Menempel kunci rahasia di chat / kode:</span> API key yang bocor bisa disalahgunakan orang lain.</li>
+        <li><span>Lompat fase:</span> deploy dulu, testing belakangan — pengunjung pertamamu yang jadi penguji.</li>
+      </ul></div>
+      <div class="panel good"><h3>✓ Yang dilakukan pembangun yang efektif</h3><ul>
+        <li><span>Satu sesi, satu tujuan:</span> pecah pekerjaan jadi langkah kecil yang bisa diverifikasi.</li>
+        <li><span>Minta rencana sebelum eksekusi</span> untuk tugas apa pun yang lebih dari sekadar ubahan kecil.</li>
+        <li><span>Selalu verifikasi di browser</span> — di laptop dan HP — sebelum lanjut ke fitur berikutnya.</li>
+        <li><span>Feedback spesifik &amp; terukur:</span> sebutkan elemennya, kondisinya, dan hasil yang diinginkan.</li>
+        <li><span>Commit kecil dan sering,</span> dengan pesan yang menjelaskan “apa” dan “kenapa”.</li>
+        <li><span>Jaga BRIEF.md tetap hidup:</span> itulah kontrak antara kamu dan agent di semua sesi.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <!-- TEMPLATE BRIEF -->
+  <section id="template" class="chapter">
+    <h2>Template brief — titik awal proyekmu</h2>
+    <p class="sub">Salin template ini, isi sebisamu (tidak harus sempurna), lalu tempel ke agent pertamamu bersama prompt wawancara di Fase 1.</p>
+    <div class="brief"><pre id="briefText">BRIEF WEBSITE SAYA
+
+Nama proyek      : [mis. Katalog Batik Laras]
+Untuk siapa      : [mis. calon pembeli usia 25-45 yang datang dari Instagram]
+Tujuan utama     : [mis. pengunjung melihat katalog lalu chat WhatsApp untuk order]
+Halaman          : Beranda, Katalog, Tentang, Kontak
+Fitur versi 1    : [mis. daftar produk + foto, tombol WhatsApp, form kontak sederhana]
+Ditunda dulu     : [mis. keranjang belanja, pembayaran online, login member]
+Gaya tampilan    : [mis. hangat &amp; rapi, warna cokelat + krem, referensi: (tautan website)]
+Konten yang sudah siap : [mis. logo PNG, 20 foto produk, teks profil usaha]
+Selesai jika     : [mis. semua halaman rapi di HP, tombol WhatsApp berfungsi, sudah online dengan domain sendiri]</pre><button class="copy-btn" id="copyBrief">Salin template brief</button></div>
+  </section>
+
+  <!-- FINAL CHECKLIST -->
+  <section id="final" class="chapter">
+    <div class="final">
+      <h2>Checklist terakhir sebelum bilang “sudah production”</h2>
+      <p class="sub">Lewati daftar ini satu per satu di URL online-nya, bukan di localhost.</p>
+      <ul class="final-grid">
+        <li>Semua halaman terbuka tanpa error</li>
+        <li>Tampilan rapi di HP dan laptop, tidak ada geser samping</li>
+        <li>Semua tombol &amp; link mengarah ke tempat yang benar</li>
+        <li>Form berfungsi dan hasilnya benar-benar sampai</li>
+        <li>Konten asli sudah terpasang — tidak ada teks contoh tersisa</li>
+        <li>Kontak / WhatsApp / alamat yang tampil sudah benar</li>
+        <li>Judul &amp; deskripsi halaman (untuk Google &amp; saat dibagikan) sudah terisi</li>
+        <li>Favicon / ikon situs sudah terpasang</li>
+        <li>HTTPS aktif (ikon gembok di browser)</li>
+        <li>Kode terakhir sudah ter-commit &amp; ter-push ke GitHub</li>
+        <li>Tidak ada kunci rahasia tertulis di dalam kode</li>
+        <li>Sudah dicoba oleh minimal 1 orang lain tanpa dibimbing</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CHAPTER NAV -->
+  <nav class="chapter-nav" aria-label="Navigasi bab">
+    <a href="#" id="prevChapter"><span class="dir">← Bab sebelumnya</span><span class="ttl" id="prevTitle"></span></a>
+    <a href="#" id="nextChapter" class="next"><span class="dir">Bab berikutnya →</span><span class="ttl" id="nextTitle"></span></a>
+  </nav>
+
+  <footer>
+    <p><strong>Cara memakai panduan ini:</strong> jangan dibaca sekali habis lalu dilupakan. Buka fase yang sedang kamu kerjakan, selesaikan daftar tugasnya, baru pindah. Proyek pertama yang kecil dan benar-benar online mengajarkan lebih banyak daripada sepuluh proyek besar yang berhenti di tengah. Selamat membangun — satu fitur kecil setiap kali. 🚀</p>
+  </footer>
+
+  </main>
+</div>
+
+<div class="toast" id="toast">Tersalin ✓</div>
+
+<script>
+(function(){
+  // Accordion phases
+  var heads = document.querySelectorAll('.phase-head');
+  heads.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var phase = btn.closest('.phase');
+      var open = phase.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+
+  // Copy buttons
+  var toast = document.getElementById('toast');
+  var toastTimer = null;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 1800);
+  }
+  function copyText(text){
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){ showToast('Tersalin ✓'); }, function(){ fallback(); });
+    } else { fallback(); }
+    function fallback(){
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); showToast('Tersalin ✓'); } catch(e){ showToast('Gagal menyalin — salin manual ya'); }
+      document.body.removeChild(ta);
+    }
+  }
+  document.querySelectorAll('.promptbox').forEach(function(box){
+    var btn = box.querySelector('.copy-btn');
+    var pre = box.querySelector('pre[data-copy]');
+    if(btn && pre){ btn.addEventListener('click', function(){ copyText(pre.textContent.trim()); }); }
+  });
+  var briefBtn = document.getElementById('copyBrief');
+  if(briefBtn){ briefBtn.addEventListener('click', function(){ copyText(document.getElementById('briefText').textContent.trim()); }); }
+
+  // TOC drawer (mobile / tablet)
+  var tocBtn = document.getElementById('tocBtn');
+  var tocClose = document.getElementById('tocClose');
+  var scrim = document.getElementById('scrim');
+  function closeToc(){ document.body.classList.remove('toc-open'); }
+  if(tocBtn){ tocBtn.addEventListener('click', function(){ document.body.classList.add('toc-open'); }); }
+  if(tocClose){ tocClose.addEventListener('click', closeToc); }
+  if(scrim){ scrim.addEventListener('click', closeToc); }
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeToc(); });
+
+  // Font size control (in-session only)
+  var sizes = [15.5, 16.5, 17.5, 19, 20.5];
+  var fi = 2;
+  var fDown = document.getElementById('fontDown');
+  var fUp = document.getElementById('fontUp');
+  var fReset = document.getElementById('fontReset');
+  function applyFont(){
+    document.documentElement.style.setProperty('--fs', sizes[fi] + 'px');
+    fDown.disabled = fi <= 0;
+    fUp.disabled = fi >= sizes.length - 1;
+  }
+  fDown.addEventListener('click', function(){ if(fi > 0){ fi--; applyFont(); } });
+  fUp.addEventListener('click', function(){ if(fi < sizes.length - 1){ fi++; applyFont(); } });
+  fReset.addEventListener('click', function(){ fi = 2; applyFont(); });
+  applyFont();
+
+  // Chapters list for prev/next + TOC highlighting
+  var chapters = [
+    {id:'top', title:'Pendahuluan'},
+    {id:'cara-kerja', title:'Cara Kerja AI Agentic'},
+    {id:'workflow', title:'Workflow: 7 Fase + Persiapan'},
+    {id:'fase-0', title:'Fase 0 · Persiapan'},
+    {id:'fase-1', title:'Fase 1 · Ide & Perencanaan'},
+    {id:'fase-2', title:'Fase 2 · Desain & Struktur'},
+    {id:'fase-3', title:'Fase 3 · Setup Project'},
+    {id:'fase-4', title:'Fase 4 · Build'},
+    {id:'fase-5', title:'Fase 5 · Testing & Debugging'},
+    {id:'fase-6', title:'Fase 6 · Deploy'},
+    {id:'fase-7', title:'Fase 7 · Maintenance'},
+    {id:'prompt-bank', title:'Bank Prompt Serbaguna'},
+    {id:'tools', title:'Peta Alat'},
+    {id:'kebiasaan', title:'Kebiasaan yang Membedakan'},
+    {id:'template', title:'Template Brief'},
+    {id:'final', title:'Checklist Terakhir'}
+  ];
+  var prevA = document.getElementById('prevChapter');
+  var nextA = document.getElementById('nextChapter');
+  var prevT = document.getElementById('prevTitle');
+  var nextT = document.getElementById('nextTitle');
+  var currentIdx = 0;
+  function updateChapterNav(){
+    var prev = chapters[currentIdx - 1];
+    var next = chapters[currentIdx + 1];
+    if(prev){ prevA.href = '#' + prev.id; prevT.textContent = prev.title; prevA.classList.remove('disabled'); }
+    else { prevA.removeAttribute('href'); prevT.textContent = '—'; prevA.classList.add('disabled'); }
+    if(next){ nextA.href = '#' + next.id; nextT.textContent = next.title; nextA.classList.remove('disabled'); }
+    else { nextA.removeAttribute('href'); nextT.textContent = 'Selesai — kamu di bab terakhir'; nextA.classList.add('disabled'); }
+  }
+  updateChapterNav();
+
+  // Clicking a phase link in the TOC also opens that phase
+  document.querySelectorAll('.toc a[href^="#fase-"]').forEach(function(a){
+    a.addEventListener('click', function(){
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if(el && !el.classList.contains('open')){
+        el.classList.add('open');
+        var head = el.querySelector('.phase-head');
+        if(head) head.setAttribute('aria-expanded','true');
+      }
+      closeToc();
+    });
+  });
+  document.querySelectorAll('.toc a').forEach(function(a){
+    a.addEventListener('click', function(){ closeToc(); });
+  });
+
+  // Reading progress + percentage
+  var bar = document.getElementById('progressBar');
+  var pct = document.getElementById('readPct');
+  function onScroll(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? (h.scrollTop / max) : 0;
+    bar.style.width = (p * 100) + '%';
+    pct.textContent = Math.round(p * 100) + '%';
+  }
+  document.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  // Active chapter tracking
+  var tocLinks = document.querySelectorAll('.toc a[data-toc]');
+  var tocMap = {};
+  tocLinks.forEach(function(a){ tocMap[a.getAttribute('href').slice(1)] = a; });
+  if('IntersectionObserver' in window){
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          var id = e.target.id;
+          tocLinks.forEach(function(a){ a.classList.remove('active'); });
+          var link = tocMap[id];
+          if(link){
+            link.classList.add('active');
+            // keep the active TOC item visible inside the sidebar only
+            if(window.innerWidth >= 1024){
+              var tocEl = document.getElementById('toc');
+              var lt = link.offsetTop, lh = link.offsetHeight;
+              if(lt < tocEl.scrollTop + 8){ tocEl.scrollTop = lt - 12; }
+              else if(lt + lh > tocEl.scrollTop + tocEl.clientHeight - 8){ tocEl.scrollTop = lt - tocEl.clientHeight + lh + 12; }
+            }
+          }
+          for(var i = 0; i < chapters.length; i++){
+            if(chapters[i].id === id){
+              currentIdx = i; updateChapterNav();
+              var bm = document.getElementById('bookMark');
+              if(bm) bm.textContent = chapters[i].title;
+              break;
+            }
+          }
+        }
+      });
+    }, {rootMargin:'-15% 0px -70% 0px'});
+    chapters.forEach(function(c){ var el = document.getElementById(c.id); if(el) obs.observe(el); });
+  }
+})();
+</script>
+</body>
+</html>
